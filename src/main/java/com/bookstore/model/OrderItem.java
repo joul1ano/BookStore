@@ -18,8 +18,9 @@ public class OrderItem {
     @Id
     private Long id;
 
-    @Column(name = "order_id")
-    private Long orderId;
+    @ManyToOne(fetch = FetchType.LAZY)// MHPWS FETCH TYPE EAGER?
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     @Column(name = "book_id")
     private Long bookId;

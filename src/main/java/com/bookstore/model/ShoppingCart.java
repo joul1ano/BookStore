@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,8 +22,9 @@ public class ShoppingCart {
     @Id
     private Long id;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", unique = true, nullable = false)
+    private User user;
 
     @Column(name = "item_count")
     private int itemCount;
@@ -31,4 +34,7 @@ public class ShoppingCart {
 
     @Column(name = "last_updated_at")
     private LocalDate lastUpdatedAt;
+
+    @OneToMany(mappedBy = "shoppingCart", fetch = FetchType.EAGER)
+    private List<ShoppingCartItem> shoppingCartItems = new ArrayList<>();
 }

@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.mapping.Join;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,8 +25,6 @@ public class Order {
     @Id
     private Long id;
 
-//    @Column(name = "user_id")
-//    private Long userId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -51,6 +51,9 @@ public class Order {
 
     @Column(name = "status_last_updated")
     private LocalDate statusLastUpdated;
+
+    @OneToMany(mappedBy = "order")
+    private List<OrderItem> orderItemList = new ArrayList<>();
 
 
 }

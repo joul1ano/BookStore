@@ -18,8 +18,9 @@ public class ShoppingCartItem {
     @Id
     private Long id;
 
-    @Column(name = "shopping_cart_id")
-    private Long shoppingCartId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shopping_cart_id")
+    private ShoppingCart shoppingCart;
 
     @Column(name = "book_id")
     private Long bookId;

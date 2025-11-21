@@ -9,6 +9,8 @@ import jakarta.persistence.Table;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -50,8 +52,9 @@ public class User {
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
 
+    @OneToOne(mappedBy = "user")
+    private ShoppingCart shoppingCart;
 
-
-
-
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders = new ArrayList<>();
 }

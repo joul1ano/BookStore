@@ -42,7 +42,8 @@ public class Book {
     @Column(name = "availability")
     private int availability;
 
-    @Column(name = "publisher_id")
-    private Long publisherId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "publisher_id")
+    private Publisher publisher;
 
 }
