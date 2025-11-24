@@ -1,11 +1,9 @@
 package com.bookstore.controllers;
 
+import com.bookstore.DTOs.BookDTO;
 import com.bookstore.model.Book;
 import com.bookstore.service.BookService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,8 +17,19 @@ public class BookController {
     }
 
     @GetMapping
-    public List<Book> getAllBooks(){
+    public List<BookDTO> getAllBooks(){
         return bookService.getAllBooks();
     }
+
+    @GetMapping("/{id}")
+    public BookDTO getBookById(@PathVariable Long id){
+        return bookService.getBookById(id);
+    }
+
+//    @PostMapping
+//    public BookDTO createBook(BookDTO bookDTO){
+//        return bookService.
+//
+//    }
 
 }

@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -42,8 +41,11 @@ public class Book {
     @Column(name = "availability")
     private int availability;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "publisher_id")
-    private Publisher publisher;
+//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+//    @JoinColumn(name = "publisher_id")
+//    private Publisher publisher;
+    @Column(name = "publisher_id")
+    private Long publisherId;
+
 
 }
