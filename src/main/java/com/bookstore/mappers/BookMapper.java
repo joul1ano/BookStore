@@ -28,6 +28,7 @@ public class BookMapper {
                 .description(bookDTO.getDescription())
                 .genre(bookDTO.getGenre())
                 .numberOfPages(bookDTO.getNumberOfPages())
+                .price(bookDTO.getPrice())
                 .availability(bookDTO.getAvailability())
                 .publisherId(bookDTO.getPublisherId())
                 .build();

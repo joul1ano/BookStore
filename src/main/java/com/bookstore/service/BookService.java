@@ -30,8 +30,8 @@ public class BookService {
                 .orElseThrow(() -> new RuntimeException("Book not found"));
     }
 
-//    public BookDTO createBook(BookDTO bookDTO){
-//        return bookRepository.save(bookMapper.toEntity(bookDTO));
-//
-//    }
+    public BookDTO createBook(BookDTO bookDTO){
+        return bookMapper.toDTO(bookRepository.save(bookMapper.toEntity(bookDTO)));
+
+    }
 }

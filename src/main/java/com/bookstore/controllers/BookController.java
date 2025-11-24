@@ -26,10 +26,9 @@ public class BookController {
         return bookService.getBookById(id);
     }
 
-//    @PostMapping
-//    public BookDTO createBook(BookDTO bookDTO){
-//        return bookService.
-//
-//    }
+    @PostMapping
+    public BookDTO createBook(@RequestBody BookDTO bookDTO){
+        return bookService.createBook(bookDTO);
+    }
 
 }
