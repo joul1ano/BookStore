@@ -33,13 +33,13 @@ public class Book {
     private Genre genre;
 
     @Column(name = "number_of_pages")
-    private int numberOfPages;
+    private Integer numberOfPages;
 
     @Column(name = "price")
-    private double price;
+    private Double price;
 
     @Column(name = "availability")
-    private int availability;
+    private Integer availability;
 
 //    @ManyToOne(fetch = FetchType.LAZY, optional = false)
 //    @JoinColumn(name = "publisher_id")

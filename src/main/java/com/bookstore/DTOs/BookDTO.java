@@ -16,8 +16,8 @@ public class BookDTO {
     private String author;
     private String description;
     private Genre genre;
-    private int numberOfPages;
-    private double price;
-    private int availability;
+    private Integer numberOfPages;
+    private Double price;
+    private Integer availability;
     private Long publisherId;
 }

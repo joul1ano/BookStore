@@ -4,9 +4,11 @@ import com.bookstore.DTOs.BookDTO;
 import com.bookstore.mappers.BookMapper;
 import com.bookstore.model.Book;
 import com.bookstore.repository.BookRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -34,4 +36,29 @@ public class BookService {
         return bookMapper.toDTO(bookRepository.save(bookMapper.toEntity(bookDTO)));
 
     }
+
+    public BookDTO updateBookById(Long id,BookDTO bookDTO){
+        Book existingBook = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+
+        existingBook.setTitle(bookDTO.getTitle());
+        existingBook.setAuthor(bookDTO.getAuthor());
+        existingBook.setDescription(bookDTO.getDescription());
+        existingBook.setGenre(bookDTO.getGenre());
+        existingBook.setNumberOfPages(bookDTO.getNumberOfPages());
+        existingBook.setPrice(bookDTO.getPrice());
+        existingBook.setAvailability(bookDTO.getAvailability());
+        existingBook.setPublisherId(bookDTO.getPublisherId());
+
+        return bookMapper.toDTO(bookRepository.save(existingBook));
+
+    }
+
+    public void deleteBookById(Long id) {
+        Book bookToDelete = bookRepository.findById(id).
+                orElseThrow(() -> new RuntimeException("Book with id: " + id + " not found"));
+
+        bookRepository.delete(bookToDelete);
+    }
+
 }
