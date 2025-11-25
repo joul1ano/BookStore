@@ -3,6 +3,7 @@ package com.bookstore.controllers;
 import com.bookstore.DTOs.BookDTO;
 import com.bookstore.model.Book;
 import com.bookstore.service.BookService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,19 +29,21 @@ public class BookController {
     }
 
     @PostMapping
-    public BookDTO createBook(@RequestBody BookDTO bookDTO){
-        return bookService.createBook(bookDTO);
+    public ResponseEntity<BookDTO> createBook(@RequestBody BookDTO bookDTO){
+        //BookDTO createdBookDTO = bookService.createBook(bookDTO);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(bookService.createBook(bookDTO));
     }
 
     @PutMapping("/{id}")
-    public BookDTO updateBook(@PathVariable Long id, @RequestBody BookDTO bookDTO){
-        return bookService.updateBookById(id, bookDTO);
+    public ResponseEntity<BookDTO> updateBook(@PathVariable Long id, @RequestBody BookDTO bookDTO){
+        return ResponseEntity.ok(bookService.updateBookById(id, bookDTO));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable Long id){
         bookService.deleteBookById(id);
-        return ResponseEntity.ok("Book deleted succesfully");
+        return ResponseEntity.ok("Book Deleted Succesfully");
     }
 
 }
