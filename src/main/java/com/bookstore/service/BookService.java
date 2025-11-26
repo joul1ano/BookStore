@@ -1,6 +1,7 @@
 package com.bookstore.service;
 
 import com.bookstore.DTOs.BookDTO;
+import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.BookMapper;
 import com.bookstore.model.Book;
 import com.bookstore.repository.BookRepository;
@@ -27,9 +28,9 @@ public class BookService {
         return bookRepository.findAll().stream().map(bookMapper::toDTO).toList();
     }
 
-    public BookDTO getBookById(Long id){
+    public BookDTO getBookById(Long id) throws ResourceNotFoundException{
         return bookRepository.findById(id).map(bookMapper::toDTO)
-                .orElseThrow(() -> new RuntimeException("Book not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Book with id: " + id + " not found"));
     }
 
     public BookDTO createBook(BookDTO bookDTO){
@@ -37,9 +38,9 @@ public class BookService {
 
     }
 
-    public BookDTO updateBookById(Long id,BookDTO bookDTO){
+    public BookDTO updateBookById(Long id,BookDTO bookDTO) throws ResourceNotFoundException{
         Book existingBook = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Book with id: " + id + " not found"));
 
         existingBook.setTitle(bookDTO.getTitle());
         existingBook.setAuthor(bookDTO.getAuthor());
@@ -54,9 +55,9 @@ public class BookService {
 
     }
 
-    public void deleteBookById(Long id) {
+    public void deleteBookById(Long id) throws ResourceNotFoundException{
         Book bookToDelete = bookRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Book with id: " + id + " not found"));
+                orElseThrow(() -> new ResourceNotFoundException("Book with id: " + id + " not found"));
 
         bookRepository.delete(bookToDelete);
     }
