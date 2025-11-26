@@ -23,8 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -82,7 +81,7 @@ public class BookControllerTest {
 
     @Test
     @DisplayName("POST /books returns the bookDTO including the id when the book is created succesfully")
-    void testCreateBookSuccesfully() throws Exception{
+    void testCreateBookSuccess() throws Exception{
         BookDTO mockBookToBeCreated = new BookDTO(null,"Python","John Doe","Learning Python",
                 Genre.HORROR,282,29.80,105,212L);
 
@@ -105,4 +104,26 @@ public class BookControllerTest {
                 .andExpect(jsonPath("$.availability").value(105))
                 .andExpect(jsonPath("$.publisherId").value(212));
     }
+    //TODO WRITE THE TEST FOR UPDATE
+
+    @Test
+    @DisplayName("DELETE /books/{id} returns 204 no content when a book is deleted succesfully")
+    void testDeleteBookByIdSuccess() throws Exception{
+        doNothing().when(bookService).deleteBookById(5L);
+        mockMvc.perform(delete("/books/{id}", 5))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("DELETE /books/{id} returns 404 not found when trying to delete a book with wrong id")
+    void testDeleteBookByIdFail() throws Exception{
+        ResourceNotFoundException exception = new ResourceNotFoundException("Book with id: 5 not found");
+        doThrow(exception).when(bookService).deleteBookById(5L);
+
+        mockMvc.perform(delete("/books/{id}", 5))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Book with id: 5 not found"));
+    }
+    //TODO WRITE DELETE TEST FOR CASE THAT YOU DELETE A BOOK THAT IS REFERENCED BY AN ACTIVE ORDER
 }
