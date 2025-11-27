@@ -3,9 +3,11 @@ package com.bookstore.controllers;
 import com.bookstore.DTOs.BookDTO;
 import com.bookstore.model.Book;
 import com.bookstore.service.BookService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -29,14 +31,14 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<BookDTO> createBook(@RequestBody BookDTO bookDTO){
+    public ResponseEntity<BookDTO> createBook(@Valid @RequestBody BookDTO bookDTO){
         //BookDTO createdBookDTO = bookService.createBook(bookDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(bookService.createBook(bookDTO));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookDTO> updateBook(@PathVariable Long id, @RequestBody BookDTO bookDTO){
+    public ResponseEntity<BookDTO> updateBook(@PathVariable Long id, @Valid @RequestBody BookDTO bookDTO){
         return ResponseEntity.ok(bookService.updateBookById(id, bookDTO));
     }
 
