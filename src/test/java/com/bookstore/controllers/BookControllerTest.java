@@ -84,6 +84,17 @@ public class BookControllerTest {
     }
 
     @Test
+    @DisplayName("Returns 400 bad request when an ID is given in the wrong format")
+    void testGetBookById_withWrongFormat() throws Exception{
+
+        mockMvc.perform(get("/books/{id}","abc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("Invalid type for parameter 'id'. Expected a positive number but received: abc"));
+
+    }
+
+    @Test
     @DisplayName("Returns a BookDTO with an assigned ID when a new book is successfully created")
     void testCreateBookSuccess() throws Exception{
         BookDTO mockBookToBeCreated = new BookDTO(null,"Python","John Doe","Learning Python",
@@ -129,7 +140,6 @@ public class BookControllerTest {
 
 
     }
-    //TODO WRITE THE TEST FOR UPDATE SOS
 
     @Test
     @DisplayName("Returns 204 No Content when a book is deleted successfully")

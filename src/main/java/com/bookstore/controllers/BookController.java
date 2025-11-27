@@ -4,8 +4,10 @@ import com.bookstore.DTOs.BookDTO;
 import com.bookstore.model.Book;
 import com.bookstore.service.BookService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -13,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/books")
+@Validated
 public class BookController {
     private BookService bookService;
 
@@ -26,7 +29,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookDTO> getBookById(@PathVariable Long id){
+    public ResponseEntity<BookDTO> getBookById(@Positive(message = "Id must be a positive number") @PathVariable Long id){
         return ResponseEntity.ok(bookService.getBookById(id));
     }
 
@@ -38,12 +41,18 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookDTO> updateBook(@PathVariable Long id, @Valid @RequestBody BookDTO bookDTO){
+    public ResponseEntity<BookDTO> updateBook(
+            @Positive(message = "Id must be a positive number")
+            @PathVariable
+            Long id,
+            @Valid
+            @RequestBody
+            BookDTO bookDTO){
         return ResponseEntity.ok(bookService.updateBookById(id, bookDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteBook(@PathVariable Long id){
+    public ResponseEntity<String> deleteBook(@Positive(message = "Id must be a positive number")@PathVariable Long id){
         bookService.deleteBookById(id);
         return ResponseEntity.noContent().build();
     }
