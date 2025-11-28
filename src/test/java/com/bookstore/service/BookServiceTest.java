@@ -33,8 +33,8 @@ public class BookServiceTest {
     private BookService bookService;
 
     @Test
-    @DisplayName("Create a book succesfully")
-    void testCreateBookSuccess(){
+    @DisplayName("Create a book - Success")
+    void testCreateBook_Success(){
         BookDTO inputBookDTO = new BookDTO(null, "Book One", "Author A", "Desc",
                 Genre.FICTION, 200, 10.0, 5, 1L);
 
@@ -60,8 +60,8 @@ public class BookServiceTest {
     }
 
     @Test
-    @DisplayName("Throws an exception when repository fails to save book")
-    void testCreateBookFail(){
+    @DisplayName("Create a book - Fail,throws an exception when repository fails to save book")
+    void testCreateBook_Fail(){
         BookDTO inputBookDTO = new BookDTO(null, "A book", "Author A", "Desc",
                 Genre.FICTION, 240, 10.0, 12, 4L);
 
@@ -83,8 +83,8 @@ public class BookServiceTest {
     }
 
     @Test
-    @DisplayName("Get all books succesfully")
-    void testGetAllBooksSuccess(){
+    @DisplayName("Get all books - Success")
+    void testGetAllBooks_Success(){
         Book book1 = new Book(14L, "Book 1", "Author A", "Desc",
                 Genre.FICTION, 240, 12.90, 12, 4L);
         Book book2 = new Book(15L, "Book 2", "Author B", "Desc",
@@ -120,8 +120,8 @@ public class BookServiceTest {
     }
 
     @Test
-    @DisplayName("Get all books but no books are available")
-    void testGetAllBooksFail(){
+    @DisplayName("Get all books - Fail")
+    void testGetAllBooks_Fail(){
         List<Book> bookList = List.of();
 
         when(bookRepository.findAll()).thenReturn(bookList);
@@ -135,15 +135,10 @@ public class BookServiceTest {
     }
 
     @Test
-    @DisplayName("Get book by id")
-    void testGetBookById(){
-        Book book1 = new Book(14L, "Book 1", "Author A", "Desc",
-                Genre.FICTION, 240, 12.90, 12, 4L);
+    @DisplayName("Get book by id - Succes")
+    void testGetBookById_Found(){
         Book book2 = new Book(15L, "Book 2", "Author B", "Desc",
                 Genre.FICTION, 120, 10.0, 220, 4L);
-        Book book3 = new Book(16L, "Book 3", "Author C", "Desc",
-                Genre.FICTION, 550, 29.90, 32, 4L);
-        List<Book> booksList = Arrays.asList(book1,book2,book3);
 
         BookDTO bookDTO2 = new BookDTO(15L, "Book 2", "Author B", "Desc",
                 Genre.FICTION, 120, 10.0, 220, 4L);
@@ -158,7 +153,11 @@ public class BookServiceTest {
 
         verify(bookRepository).findById(15L);
         verify(bookMapper).toDTO(book2);
+    }
 
+    @Test
+    @DisplayName("Get book by id - Fail")
+    void getBookById_NotFound(){
 
     }
 }
