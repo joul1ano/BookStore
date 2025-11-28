@@ -2,6 +2,7 @@ package com.bookstore.service;
 
 import com.bookstore.DTOs.BookDTO;
 import com.bookstore.enums.Genre;
+import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.BookMapper;
 import com.bookstore.model.Book;
 import com.bookstore.repository.BookRepository;
@@ -60,7 +61,7 @@ public class BookServiceTest {
     }
 
     @Test
-    @DisplayName("Create a book - Fail,throws an exception when repository fails to save book")
+    @DisplayName("Create a book - Fail (throws an exception when repository fails to save book)")
     void testCreateBook_Fail(){
         BookDTO inputBookDTO = new BookDTO(null, "A book", "Author A", "Desc",
                 Genre.FICTION, 240, 10.0, 12, 4L);
@@ -120,7 +121,7 @@ public class BookServiceTest {
     }
 
     @Test
-    @DisplayName("Get all books - Fail")
+    @DisplayName("Get all books - Fail (No existing books in catalogue)")
     void testGetAllBooks_Fail(){
         List<Book> bookList = List.of();
 
@@ -156,8 +157,82 @@ public class BookServiceTest {
     }
 
     @Test
-    @DisplayName("Get book by id - Fail")
+    @DisplayName("Get book by id - Fail (Book doesn't exist)")
     void getBookById_NotFound(){
+        when(bookRepository.findById(25L)).thenReturn(Optional.empty());
 
+        ResourceNotFoundException ex = Assertions.assertThrows(ResourceNotFoundException.class,
+                () -> bookService.getBookById(25L));
+
+        Assertions.assertEquals("Book with id: 25 not found",ex.getMessage());
+
+        verify(bookRepository).findById(25L);
+    }
+
+    @Test
+    @DisplayName("Update book by id - Success")
+    void testUpdateBookById_Success(){
+        Book bookToBeUpdated = new Book(14L, "Book 1", "Author A", "Desc",
+                Genre.FICTION, 240, 12.90, 12, 4L);
+
+        BookDTO inputBookDTO = new BookDTO(14L, "Book 1", "Author A", "Desc",
+                Genre.FICTION, 240, 17.90, 24, 4L);
+        Book inputBook = new Book(14L, "Book 1", "Author A", "Desc",
+                Genre.FICTION, 240, 17.90, 24, 4L);
+
+        when(bookRepository.findById(14L)).thenReturn(Optional.of(bookToBeUpdated));
+        when(bookRepository.save(bookToBeUpdated)).thenReturn(inputBook);
+        when(bookMapper.toDTO(inputBook)).thenReturn(inputBookDTO);
+
+        BookDTO updatedBookDTO = bookService.updateBookById(14L,inputBookDTO);
+
+        Assertions.assertNotNull(updatedBookDTO);
+        Assertions.assertEquals(14L,updatedBookDTO.getId());
+        Assertions.assertEquals(17.90,updatedBookDTO.getPrice());
+        Assertions.assertEquals(24,updatedBookDTO.getAvailability());
+
+        verify(bookRepository).findById(14L);
+        verify(bookRepository).save(inputBook);
+        verify(bookMapper).toDTO(inputBook);
+    }
+
+    @Test
+    @DisplayName("Update book by id - Fail (Book doesn't exist)")
+    void testUpdateBookById_Fail(){
+        BookDTO bookDTO = new BookDTO();
+
+        when(bookRepository.findById(25L)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException ex = Assertions.assertThrows(ResourceNotFoundException.class,
+                () -> bookService.updateBookById(25L,bookDTO));
+
+        Assertions.assertEquals("Book with id: 25 not found",ex.getMessage());
+
+        verify(bookRepository).findById(25L);
+        verify(bookRepository,never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Delete book by id - Success")
+    void testDeleteBookById_Success(){
+        Book book = new Book(14L, "Book 1", "Author A", "Desc",
+                Genre.FICTION, 240, 17.90, 24, 4L);
+        when(bookRepository.findById(14L)).thenReturn(Optional.of(book));
+
+        Assertions.assertDoesNotThrow(()->bookService.deleteBookById(14L));
+
+        verify(bookRepository).findById(14L);
+        verify(bookRepository).delete(book);
+    }
+
+    @Test
+    @DisplayName("Delete book by id - Fail (Book doesn't exist")
+    void testDeleteBookById_Fail(){
+        when(bookRepository.findById(25L)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(ResourceNotFoundException.class,()->bookService.deleteBookById(25L));
+
+        verify(bookRepository).findById(25L);
+        verify(bookRepository,never()).deleteById(any());
     }
 }

@@ -4,6 +4,7 @@ import com.bookstore.model.Book;
 import com.bookstore.DTOs.BookDTO;
 import org.springframework.stereotype.Component;
 
+//TODO: USE MAPSTRUCT
 @Component
 public class BookMapper {
 
