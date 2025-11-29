@@ -5,6 +5,7 @@ import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.BookMapper;
 import com.bookstore.model.Book;
 import com.bookstore.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class BookService {
     private BookRepository bookRepository;
+    @Autowired
     private BookMapper bookMapper;
 
     public BookService (BookRepository bookRepository, BookMapper bookMapper){

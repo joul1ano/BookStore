@@ -123,8 +123,6 @@ public class BookControllerTest {
                 .andExpect(jsonPath("$.message.numberOfPages").value("Number of pages must be a positive number"))
                 .andExpect(jsonPath("$.message.price").value("Price must be a positive number"))
                 .andExpect(jsonPath("$.message.availability").value("Availability cannot be negative"));
-
-
     }
 
     @Test
