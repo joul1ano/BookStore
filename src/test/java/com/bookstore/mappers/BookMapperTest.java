@@ -57,7 +57,7 @@ class BookMapperTest {
     }
 
     @Test
-    @DisplayName("toDTO returns null when input entity is null")
+    @DisplayName("toAdminDTO returns null when input entity is null")
     void testToDtoNullInput() {
         BookDTO result = bookMapper.toDTO(null);
 
