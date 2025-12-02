@@ -9,6 +9,7 @@ import com.bookstore.service.UserFavouritesService;
 import com.bookstore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,18 +22,12 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final UserFavouritesService favouritesService;
-    @Autowired
-    private final UserMapper userMapper;
 
-    public UserController(UserService userService,UserFavouritesService favouritesService, UserMapper userMapper){
+    public UserController(UserService userService,UserFavouritesService favouritesService){
         this.favouritesService = favouritesService;
         this.userService = userService;
-        this.userMapper = userMapper;
     }
 
-    /*
-    Admin Permission
-     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<UserDTO> getAllUsers(){
@@ -45,33 +40,32 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
-    /*
-    User Permission
-     */
-
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/me")
     public ResponseEntity<UserMeDTO> getMe(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = auth.getName();
+
         return ResponseEntity.ok(userService.getUserByEmail(userEmail));
     }
 
-//    @PreAuthorize("hasRole('USER')")
-//    @GetMapping("me/favourites")
-//    public ResponseEntity<List<BookDTO>> getFavouriteBooks(){
-//        return
-//    }
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("me/favourites")
+    public ResponseEntity<List<BookDTO>> getFavouriteBooks(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = userService.getUserIdByEmail(auth.getName());
 
-    //@PreAuthorize("hasRole('USER')")
+        return ResponseEntity.ok(favouritesService.getFavourites(userId));
+    }
+
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("me/favourites")
     public ResponseEntity<Void> addBookToFavourites(@RequestBody Long bookId){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
         Long userId = userService.getUserIdByEmail(auth.getName());
         favouritesService.addBookToFavourites(userId,bookId);
-        return ResponseEntity.noContent().build();
 
+        return ResponseEntity.noContent().build();
     }
 
 }
