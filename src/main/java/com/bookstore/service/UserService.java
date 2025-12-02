@@ -1,6 +1,7 @@
 package com.bookstore.service;
 
 import com.bookstore.DTOs.UserDTO;
+import com.bookstore.DTOs.UserMeDTO;
 import com.bookstore.enums.Role;
 import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.UserMapper;
@@ -29,6 +30,18 @@ public class UserService {
     public UserDTO getUserById(Long id) {
         return userRepository.findById(id).map(userMapper::toAdminDTO)
                 .orElseThrow(()-> new ResourceNotFoundException("User with id: " + id + " not found"));
+    }
+
+    public UserMeDTO getUserByEmail(String email){
+        return userMapper.toUserMeDTO(userRepository.findByEmail(email)
+                .orElseThrow(()->new ResourceNotFoundException("User not found")));
+    }
+
+    public Long getUserIdByEmail(String email){
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(()-> new ResourceNotFoundException("User with email: " + email + " not found"));
+        return user.getId();
+
     }
 
 

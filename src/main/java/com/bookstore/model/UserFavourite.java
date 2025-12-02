@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,5 +28,5 @@ public class UserFavourite {
     private Long bookId;
 
     @Column(name = "added_at")
-    private LocalDate addedAt;
+    private LocalDateTime addedAt;
 }

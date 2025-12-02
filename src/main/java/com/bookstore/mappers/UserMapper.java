@@ -23,7 +23,7 @@ public class UserMapper {
                 .lastLoginAt(user.getLastLoginAt()).build();
     }
 
-    public UserMeDTO toUserMeDTO(UserDTO user){
+    public UserMeDTO toUserMeDTO(User user){
         return UserMeDTO.builder()
                 .name(user.getName())
                 .username(user.getUsername())
