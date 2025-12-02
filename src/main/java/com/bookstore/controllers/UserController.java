@@ -58,12 +58,26 @@ public class UserController {
         return ResponseEntity.ok(favouritesService.getFavourites(userId));
     }
 
+//todo ask evvagelia
+// MHPWS EINAI KALYTERA ME MIA MONO METHODO PUT ? P.X PUT -> DINEI TO BOOK ID -> AN
+//    TO BOOK DEN YPARXEI STA FAVS, VALTO , ALLIWS AN YPARXEI VGALTO
     @PreAuthorize("hasRole('USER')")
     @PostMapping("me/favourites")
     public ResponseEntity<Void> addBookToFavourites(@RequestBody Long bookId){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Long userId = userService.getUserIdByEmail(auth.getName());
         favouritesService.addBookToFavourites(userId,bookId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @DeleteMapping("me/favourites/{bookId}")
+    public ResponseEntity<Void> removeFavouriteByBookId(@PathVariable Long bookId){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = userService.getUserIdByEmail(auth.getName());
+
+        favouritesService.removeFavouriteBook(userId,bookId);
 
         return ResponseEntity.noContent().build();
     }

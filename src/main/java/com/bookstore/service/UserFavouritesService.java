@@ -1,6 +1,7 @@
 package com.bookstore.service;
 
 import com.bookstore.DTOs.BookDTO;
+import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.BookMapper;
 import com.bookstore.model.UserFavourite;
 import com.bookstore.repository.BookRepository;
@@ -24,10 +25,6 @@ public class UserFavouritesService {
         this.bookMapper = bookMapper;
     }
 
-    public void addBookToFavourites(Long userId, Long bookId){
-        favouritesRepository.save(new UserFavourite(null,userId,bookId, LocalDateTime.now()));
-    }
-
     public List<BookDTO> getFavourites(Long userId) {
         List<Long> bookIds = favouritesRepository.findAllByUserId(userId)
                 .stream()
@@ -40,4 +37,13 @@ public class UserFavouritesService {
                 .toList();
     }
 
+    public void addBookToFavourites(Long userId, Long bookId){
+        favouritesRepository.save(new UserFavourite(null,userId,bookId, LocalDateTime.now()));
+    }
+
+    public void removeFavouriteBook(Long userId, Long bookId){
+        UserFavourite favourite = favouritesRepository.findByUserIdAndBookId(userId,bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Book with id: " + bookId + " is not in favourites"));
+        favouritesRepository.delete(favourite);
+    }
 }
