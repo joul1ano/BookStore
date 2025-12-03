@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.mapstruct.control.MappingControl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,11 +22,13 @@ public class UserFavourite {
     @Id
     private Long id;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(name = "book_id")
-    private Long bookId;
+    @ManyToOne
+    @JoinColumn(name = "book_id")
+    private Book book;
 
     @Column(name = "added_at")
     private LocalDateTime addedAt;
