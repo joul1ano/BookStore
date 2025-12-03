@@ -33,7 +33,7 @@ public class BookService {
         return bookRepository.findAll().stream().map(bookMapper::toDTO).toList();
     }
 
-    public BookDTO getBookById(Long id) throws ResourceNotFoundException{
+    public BookDTO getBookById(Long id) {
         return bookRepository.findById(id).map(bookMapper::toDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("Book with id: " + id + " not found"));
     }
@@ -43,7 +43,7 @@ public class BookService {
 
     }
 
-    public BookDTO updateBookById(Long id,BookDTO bookDTO) throws ResourceNotFoundException{
+    public BookDTO updateBookById(Long id,BookDTO bookDTO){
         Book existingBook = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book with id: " + id + " not found"));
 
@@ -61,7 +61,7 @@ public class BookService {
 
     }
 
-    public void deleteBookById(Long id) throws ResourceNotFoundException{
+    public void deleteBookById(Long id){
         Book bookToDelete = bookRepository.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("Book with id: " + id + " not found"));
 

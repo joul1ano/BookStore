@@ -50,7 +50,6 @@ public class UserFavouritesService {
         if (favouritesRepository.findByUser_IdAndBook_Id(userId,bookId).isPresent()){
             throw new FavouriteAlreadyExistsException("Book is already in favourites");
         }
-
         favouritesRepository.save(new UserFavourite(null,user,book,LocalDateTime.now()));
     }
 
