@@ -3,6 +3,7 @@ package com.bookstore.mappers;
 import com.bookstore.DTOs.BookDTO;
 import com.bookstore.enums.Genre;
 import com.bookstore.model.Book;
+import com.bookstore.model.Publisher;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,8 +18,9 @@ class BookMapperTest {
     @Test
     @DisplayName("Maps an Entity to DTO correctly")
     void testMapEntityToDTO() {
+        Publisher publisher = Publisher.builder().id(1L).name("Ianos").build();
         Book inputBook = new Book(19L, "Book One", "Author A", "Desc",
-                Genre.FICTION, 200, 10.0, 5, 1L);
+                Genre.FICTION, 200, 10.0, 5, publisher);
 
         BookDTO result = bookMapper.toDTO(inputBook);
 
@@ -53,7 +55,7 @@ class BookMapperTest {
         Assertions.assertEquals(200, result.getNumberOfPages());
         Assertions.assertEquals(10.0, result.getPrice());
         Assertions.assertEquals(5, result.getAvailability());
-        Assertions.assertEquals(1L, result.getPublisherId());
+        Assertions.assertEquals(1L, result.getPublisher().getId());
     }
 
     @Test

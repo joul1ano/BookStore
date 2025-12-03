@@ -5,10 +5,10 @@ import com.bookstore.enums.Genre;
 import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.BookMapper;
 import com.bookstore.model.Book;
+import com.bookstore.model.Publisher;
 import com.bookstore.repository.BookRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.bookstore.repository.PublisherRepository;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +31,9 @@ public class BookServiceTest {
     @Mock
     private BookMapper bookMapper;
 
+    @Mock
+    private PublisherRepository publisherRepository;
+
     @InjectMocks
     private BookService bookService;
 
@@ -39,8 +43,9 @@ public class BookServiceTest {
         BookDTO inputBookDTO = new BookDTO(null, "Book One", "Author A", "Desc",
                 Genre.FICTION, 200, 10.0, 5, 1L);
 
+        Publisher publisher = Publisher.builder().id(1L).name("Ianos").build();
         Book mappedBook = new Book(12L, "Book One", "Author A", "Desc",
-                Genre.FICTION, 200, 10.0, 5, 1L);
+                Genre.FICTION, 200, 10.0, 5, publisher);
 
         BookDTO mappedBookDTO = new BookDTO(12L, "Book One", "Author A", "Desc",
                 Genre.FICTION, 200, 10.0, 5, 1L);
@@ -66,8 +71,9 @@ public class BookServiceTest {
         BookDTO inputBookDTO = new BookDTO(null, "A book", "Author A", "Desc",
                 Genre.FICTION, 240, 10.0, 12, 4L);
 
+        Publisher publisher = Publisher.builder().id(4L).name("Meltemi").build();
         Book mappedBook = new Book(19L, "A book", "Author A", "Desc",
-                Genre.FICTION, 240, 10.0, 12, 4L);
+                Genre.FICTION, 240, 10.0, 12, publisher);
 
         when(bookMapper.toEntity(inputBookDTO)).thenReturn(mappedBook);
         when(bookRepository.save(mappedBook)).thenThrow(new RuntimeException("Database Error"));
@@ -86,12 +92,13 @@ public class BookServiceTest {
     @Test
     @DisplayName("Get all books - Success")
     void testGetAllBooks_Success(){
+        Publisher publisher = Publisher.builder().id(4L).name("Meltelmi").build();
         Book book1 = new Book(14L, "Book 1", "Author A", "Desc",
-                Genre.FICTION, 240, 12.90, 12, 4L);
+                Genre.FICTION, 240, 12.90, 12, publisher);
         Book book2 = new Book(15L, "Book 2", "Author B", "Desc",
-                Genre.FICTION, 120, 10.0, 220, 4L);
+                Genre.FICTION, 120, 10.0, 220, publisher);
         Book book3 = new Book(16L, "Book 3", "Author C", "Desc",
-                Genre.FICTION, 550, 29.90, 32, 4L);
+                Genre.FICTION, 550, 29.90, 32, publisher);
         List<Book> booksList = Arrays.asList(book1,book2,book3);
 
         BookDTO bookDTO1 = new BookDTO(14L, "Book 1", "Author A", "Desc",
@@ -138,8 +145,9 @@ public class BookServiceTest {
     @Test
     @DisplayName("Get book by id - Succes")
     void testGetBookById_Found(){
+        Publisher publisher = Publisher.builder().id(4L).name("Meltemi").build();
         Book book2 = new Book(15L, "Book 2", "Author B", "Desc",
-                Genre.FICTION, 120, 10.0, 220, 4L);
+                Genre.FICTION, 120, 10.0, 220, publisher);
 
         BookDTO bookDTO2 = new BookDTO(15L, "Book 2", "Author B", "Desc",
                 Genre.FICTION, 120, 10.0, 220, 4L);
@@ -172,17 +180,19 @@ public class BookServiceTest {
     @Test
     @DisplayName("Update book by id - Success")
     void testUpdateBookById_Success(){
+        Publisher publisher = Publisher.builder().id(4L).name("Meltemi").build();
         Book bookToBeUpdated = new Book(14L, "Book 1", "Author A", "Desc",
-                Genre.FICTION, 240, 12.90, 12, 4L);
+                Genre.FICTION, 240, 12.90, 12, publisher);
 
         BookDTO inputBookDTO = new BookDTO(14L, "Book 1", "Author A", "Desc",
                 Genre.FICTION, 240, 17.90, 24, 4L);
         Book inputBook = new Book(14L, "Book 1", "Author A", "Desc",
-                Genre.FICTION, 240, 17.90, 24, 4L);
+                Genre.FICTION, 240, 17.90, 24, publisher);
 
         when(bookRepository.findById(14L)).thenReturn(Optional.of(bookToBeUpdated));
         when(bookRepository.save(bookToBeUpdated)).thenReturn(inputBook);
         when(bookMapper.toDTO(inputBook)).thenReturn(inputBookDTO);
+        when(publisherRepository.findById(4L)).thenReturn(Optional.of(publisher));
 
         BookDTO updatedBookDTO = bookService.updateBookById(14L,inputBookDTO);
 
@@ -200,8 +210,8 @@ public class BookServiceTest {
     @DisplayName("Update book by id - Fail (Book doesn't exist)")
     void testUpdateBookById_Fail(){
         BookDTO bookDTO = new BookDTO();
-
         when(bookRepository.findById(25L)).thenReturn(Optional.empty());
+
 
         ResourceNotFoundException ex = Assertions.assertThrows(ResourceNotFoundException.class,
                 () -> bookService.updateBookById(25L,bookDTO));
@@ -215,8 +225,9 @@ public class BookServiceTest {
     @Test
     @DisplayName("Delete book by id - Success")
     void testDeleteBookById_Success(){
+        Publisher publisher = Publisher.builder().id(4L).name("Meltemi").build();
         Book book = new Book(14L, "Book 1", "Author A", "Desc",
-                Genre.FICTION, 240, 17.90, 24, 4L);
+                Genre.FICTION, 240, 17.90, 24, publisher);
         when(bookRepository.findById(14L)).thenReturn(Optional.of(book));
 
         Assertions.assertDoesNotThrow(()->bookService.deleteBookById(14L));
