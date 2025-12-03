@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -78,6 +79,18 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(new ErrorResponse(message));
     }
+
+    @ExceptionHandler(FavouriteAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleBookExistsInFavourites(FavouriteAlreadyExistsException ex){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFound(UsernameNotFoundException ex){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
 
 
 }

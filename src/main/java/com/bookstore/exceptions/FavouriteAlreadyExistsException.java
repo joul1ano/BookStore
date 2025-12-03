@@ -3,9 +3,9 @@ package com.bookstore.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class ResourceNotFoundException extends RuntimeException {
-    public ResourceNotFoundException(String message){
+@ResponseStatus(HttpStatus.CONFLICT)
+public class FavouriteAlreadyExistsException extends RuntimeException {
+    public FavouriteAlreadyExistsException(String message) {
         super(message);
     }
 }

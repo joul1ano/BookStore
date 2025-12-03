@@ -1,6 +1,7 @@
 package com.bookstore.service;
 
 import com.bookstore.DTOs.BookDTO;
+import com.bookstore.exceptions.FavouriteAlreadyExistsException;
 import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.BookMapper;
 import com.bookstore.model.Book;
@@ -9,7 +10,9 @@ import com.bookstore.model.UserFavourite;
 import com.bookstore.repository.BookRepository;
 import com.bookstore.repository.UserFavouritesRepository;
 import com.bookstore.repository.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,6 +45,12 @@ public class UserFavouritesService {
         User user = userRepository.findById(userId).orElseThrow();
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book with id: " + bookId + " not found"));
+
+        /* Checking if book already exists in favourites */
+        if (favouritesRepository.findByUser_IdAndBook_Id(userId,bookId).isPresent()){
+            throw new FavouriteAlreadyExistsException("Book is already in favourites");
+        }
+
         favouritesRepository.save(new UserFavourite(null,user,book,LocalDateTime.now()));
     }
 

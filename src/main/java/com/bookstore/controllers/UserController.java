@@ -58,16 +58,10 @@ public class UserController {
         return ResponseEntity.ok(favouritesService.getFavourites(userId));
     }
 
-    //todo ask evvagelia MHPWS EINAI KALYTERA ME MIA MONO METHODO PUT ? P.X PUT -> DINEI TO BOOK ID -> AN
-    // TO BOOK DEN YPARXEI STA FAVS, VALTO , ALLIWS AN YPARXEI VGALTO
-
-    //todo
-    // 1) before adding , must check if book already exists in favourites, because when the same book exists 2
-    // times in the favourites , when trying to delete it you get 403 forbidden
-    // 2) before adding, check if book actually exists
     @PreAuthorize("hasRole('USER')")
     @PostMapping("me/favourites/{bookId}")
     public ResponseEntity<Void> addBookToFavourites(@PathVariable Long bookId){
+        System.out.println(">>>>>CONTROLLER REACHED");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Long userId = userService.getUserIdByEmail(auth.getName());
         favouritesService.addBookToFavourites(userId,bookId);
