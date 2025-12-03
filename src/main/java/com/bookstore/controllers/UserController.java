@@ -63,6 +63,7 @@ public class UserController {
 //    TO BOOK DEN YPARXEI STA FAVS, VALTO , ALLIWS AN YPARXEI VGALTO
     @PreAuthorize("hasRole('USER')")
     @PostMapping("me/favourites")
+    //EDW MHPWS PREPEI NA TO KANW ME PATH VARIABLE KALYETRA ?
     public ResponseEntity<Void> addBookToFavourites(@RequestBody Long bookId){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Long userId = userService.getUserIdByEmail(auth.getName());

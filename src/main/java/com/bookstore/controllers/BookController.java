@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,7 @@ public class BookController {
         return ResponseEntity.ok(bookService.getBookById(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<BookDTO> createBook(@Valid @RequestBody BookDTO bookDTO){
         //BookDTO createdBookDTO = bookService.createBook(bookDTO);
@@ -40,6 +42,7 @@ public class BookController {
                 .body(bookService.createBook(bookDTO));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<BookDTO> updateBook(
             @Positive(message = "Id must be a positive number")
@@ -51,6 +54,7 @@ public class BookController {
         return ResponseEntity.ok(bookService.updateBookById(id, bookDTO));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBook(@Positive(message = "Id must be a positive number")@PathVariable Long id){
         bookService.deleteBookById(id);
