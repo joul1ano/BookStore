@@ -1,6 +1,9 @@
 package com.bookstore.controllers;
 
 import com.bookstore.DTOs.BookDTO;
+import com.bookstore.config.JwtAuthenticationFilter;
+import com.bookstore.config.SecurityConfig;
+import com.bookstore.config.JwtService;
 import com.bookstore.enums.Genre;
 import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.service.BookService;
@@ -8,11 +11,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,9 +33,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.hamcrest.Matchers.is;
 
-@AutoConfigureMockMvc
-@WebMvcTest(BookController.class)
-public class BookControllerTest {
+@AutoConfigureMockMvc(addFilters = false)
+@WebMvcTest(controllers = BookController.class,
+        excludeFilters = {
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthenticationFilter.class),
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class)
+        })
+class BookControllerTest {
     @MockitoBean
     private BookService bookService;
 
@@ -81,6 +94,7 @@ public class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Returns a BookDTO with an assigned ID when a new book is successfully created")
     void testCreateBook_Success() throws Exception{
         BookDTO mockBookToBeCreated = new BookDTO(null,"Python","John Doe","Learning Python",
@@ -126,6 +140,7 @@ public class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Returns 204 No Content when a book is deleted successfully")
     void testDeleteBookById_Success() throws Exception{
         doNothing().when(bookService).deleteBookById(5L);
@@ -134,6 +149,7 @@ public class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Returns 404 Not Found when attempting to delete a non-existent book")
     void testDeleteBookById_Fail() throws Exception{
         ResourceNotFoundException exception = new ResourceNotFoundException("Book with id: 5 not found");
