@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.engine.internal.Cascade;
 import org.mapstruct.control.MappingControl;
 
 import java.time.LocalDate;
@@ -27,7 +28,9 @@ public class UserFavourite {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "book_id")
+    @JoinColumn(name = "book_id",
+            foreignKey = @ForeignKey(name = "book_id",
+                    foreignKeyDefinition = "FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE"))
     private Book book;
 
     @Column(name = "added_at")

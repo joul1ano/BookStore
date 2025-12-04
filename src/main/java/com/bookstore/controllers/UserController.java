@@ -61,7 +61,6 @@ public class UserController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("me/favourites/{bookId}")
     public ResponseEntity<Void> addBookToFavourites(@PathVariable Long bookId){
-        System.out.println(">>>>>CONTROLLER REACHED");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Long userId = userService.getUserIdByEmail(auth.getName());
         favouritesService.addBookToFavourites(userId,bookId);
