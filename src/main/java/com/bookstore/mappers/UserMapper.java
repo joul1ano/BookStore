@@ -5,30 +5,16 @@ import com.bookstore.DTOs.UserMeDTO;
 import com.bookstore.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.stereotype.Component;
+import org.mapstruct.factory.Mappers;
 
-//TODO USE MAPSTRUCT
-@Component
-public class UserMapper {
-    public UserDTO toAdminDTO(User user){
-        return UserDTO.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .phoneNumber(user.getPhoneNumber())
-                .role(user.getRole())
-                .totalAmountSpent(user.getTotalAmountSpent())
-                .createdAt(user.getCreatedAt())
-                .lastLoginAt(user.getLastLoginAt()).build();
-    }
+@Mapper(componentModel = "spring")
+public interface UserMapper {
 
-    public UserMeDTO toUserMeDTO(User user){
-        return UserMeDTO.builder()
-                .name(user.getName())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .phoneNumber(user.getPhoneNumber())
-                .role(user.getRole()).build();
-    }
+    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+
+    // 1) Map User → UserDTO  (admin)
+    UserDTO toAdminDTO(User user);
+
+    // 2) Map User → UserMeDTO (user seeing his own profile)
+    UserMeDTO toUserMeDTO(User user);
 }
