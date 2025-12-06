@@ -23,7 +23,7 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) throws UsernameAlreadyExistsException {
         if (userRepository.findByUsername(request.getUsername()).isPresent())
-            throw new UsernameAlreadyExistsException("Username already exists");
+            throw new UsernameAlreadyExistsException();
 
         var user = User.builder()
                 .name(request.getName())
