@@ -22,8 +22,6 @@ import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
-//TODO CHANGE THE TESTS FROM GET USER BY EMAIL --> GET USER BY USERNAME
-//TODO CHANGE THE TESTS FROM GET USER BY EMAIL --> GET USER BY USERNAME
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
     @Mock
@@ -163,8 +161,8 @@ public class UserServiceTest {
     }
     //TODO CHANGE THE TESTS FROM GET USER BY EMAIL --> GET USER BY USERNAME
     @Test
-    @DisplayName("Get user by email - Success")
-    void testGetUserByEmail_Found(){
+    @DisplayName("Get user by username - Success")
+    void testGetUserByUsername_Found(){
         User user = User.builder()
                 .id(1l)
                 .name("John")
@@ -185,34 +183,34 @@ public class UserServiceTest {
                 .role(Role.USER)
                 .build();
 
-        when(userRepository.findByUsername("johnex@gmail.com")).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername("john7")).thenReturn(Optional.of(user));
         when(userMapper.toUserMeDTO(user)).thenReturn(userDTO);
 
-        UserMeDTO returnedUser = userService.getUserByEmail("johnex@gmail.com");
+        UserMeDTO returnedUser = userService.getUserByUsername("john7");
 
         Assertions.assertNotNull(returnedUser);
         Assertions.assertEquals(userDTO,returnedUser);
 
-        verify(userRepository).findByUsername("johnex@gmail.com");
+        verify(userRepository).findByUsername("john7");
         verify(userMapper).toUserMeDTO(user);
     }
 
     @Test
-    @DisplayName("Get user by email - Fail - Not found")
-    void testGetUserByEmail_NotFound(){
-        when(userRepository.findByUsername("johnex@gmail.com")).thenReturn(Optional.empty());
+    @DisplayName("Get user by username - Fail - Not found")
+    void testGetUserByUsername_NotFound(){
+        when(userRepository.findByUsername("john7")).thenReturn(Optional.empty());
 
 
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> userService.getUserIdByEmail("johnex@gmail.com"));
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> userService.getUserIdByUsername("john7"));
 
-        verify(userRepository).findByUsername("johnex@gmail.com");
+        verify(userRepository).findByUsername("john7");
         verify(userMapper,never()).toUserMeDTO(any());
 
     }
 
     @Test
     @DisplayName("Get a user's id by username - Success")
-    void testGetUserIdByEmail_Found(){
+    void testGetUserIdByUsername_Found(){
         User user = User.builder()
                 .id(1l)
                 .name("John")
@@ -228,11 +226,11 @@ public class UserServiceTest {
 
         when(userRepository.findByUsername("john7")).thenReturn(Optional.of(user));
 
-        Long id = userService.getUserIdByEmail("johnex@gmail.com");
+        Long id = userService.getUserIdByUsername("john7");
 
         Assertions.assertEquals(1L,id);
 
-        verify(userRepository).findByUsername("johnex@gmail.com");
+        verify(userRepository).findByUsername("john7");
     }
     /*
     It doesn't make sense to write a negative test for this case, because when the method we test runs,
