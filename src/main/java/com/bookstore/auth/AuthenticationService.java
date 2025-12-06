@@ -2,6 +2,7 @@ package com.bookstore.auth;
 
 import com.bookstore.config.JwtService;
 import com.bookstore.enums.Role;
+import com.bookstore.exceptions.UsernameAlreadyExistsException;
 import com.bookstore.model.User;
 import com.bookstore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,10 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public AuthenticationResponse register(RegisterRequest request) throws UsernameAlreadyExistsException {
+        if (userRepository.findByUsername(request.getUsername()).isPresent())
+            throw new UsernameAlreadyExistsException("Username already exists");
+
         var user = User.builder()
                 .name(request.getName())
                 .username(request.getUsername())
