@@ -44,16 +44,16 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserMeDTO> getMe(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userEmail = auth.getName();
+        String username = auth.getName();
 
-        return ResponseEntity.ok(userService.getUserByEmail(userEmail));
+        return ResponseEntity.ok(userService.getUserByUsername(username));
     }
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("me/favourites")
     public ResponseEntity<List<BookDTO>> getFavouriteBooks(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = userService.getUserIdByEmail(auth.getName());
+        Long userId = userService.getUserIdByUsername(auth.getName());
 
         return ResponseEntity.ok(favouritesService.getFavourites(userId));
     }
@@ -62,7 +62,7 @@ public class UserController {
     @PostMapping("me/favourites/{bookId}")
     public ResponseEntity<Void> addBookToFavourites(@PathVariable Long bookId){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = userService.getUserIdByEmail(auth.getName());
+        Long userId = userService.getUserIdByUsername(auth.getName());
         favouritesService.addBookToFavourites(userId,bookId);
 
         return ResponseEntity.noContent().build();
@@ -72,7 +72,7 @@ public class UserController {
     @DeleteMapping("me/favourites/{bookId}")
     public ResponseEntity<Void> removeFavouriteByBookId(@PathVariable Long bookId){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = userService.getUserIdByEmail(auth.getName());
+        Long userId = userService.getUserIdByUsername(auth.getName());
 
         favouritesService.removeFavouriteBook(userId,bookId);
 
