@@ -38,6 +38,7 @@ public class BookService {
                 .orElseThrow(() -> new ResourceNotFoundException("Book with id: " + id + " not found"));
     }
 
+    //TODO MAKE SURE THAT THE PUBLISHER EXISTS BEFORE CREATING BOOK
     public BookDTO createBook(BookDTO bookDTO){
         return bookMapper.toDTO(bookRepository.save(bookMapper.toEntity(bookDTO)));
 

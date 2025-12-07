@@ -28,8 +28,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.springframework.security.test.context.support.WithMockUser;
@@ -262,7 +261,6 @@ public class UserControllerTest {
         // User "alicej" has id=1
         when(userService.getUserIdByUsername("alicej")).thenReturn(1L);
 
-        // No favourite books -> return empty list
         when(userFavouritesService.getFavourites(1L)).thenReturn(List.of());
 
         mockMvc.perform(get("/users/me/favourites"))
@@ -270,6 +268,9 @@ public class UserControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(0));  // array is empty
+
+        verify(userService).getUserIdByUsername("alicej");
+        verify(userFavouritesService).getFavourites(1L);
     }
 
     @Test
@@ -281,6 +282,9 @@ public class UserControllerTest {
 
         mockMvc.perform(post("/users/me/favourites/{bookId}",7L))
                 .andExpect(status().isNoContent());
+
+        verify(userService).getUserIdByUsername("alicej");
+        verify(userFavouritesService).addBookToFavourites(1L,7L);
     }
 
     @Test
@@ -296,6 +300,23 @@ public class UserControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value("Book with id: 7 not found"));
+
+        verify(userService).getUserIdByUsername("alicej");
+        verify(userFavouritesService).addBookToFavourites(1L,7L);
+    }
+
+    @Test
+    @DisplayName("DELETE /users/me/favourites/{bookId} - Success")
+    @WithMockUser(username = "alicej", roles = "USER")
+    void testRemoveBookFromFavourites_Success() throws Exception{
+        when(userService.getUserIdByUsername("alicej")).thenReturn(1L);
+        doNothing().when(userFavouritesService).removeFavouriteBook(1L,7L);
+
+        mockMvc.perform(delete("/users/me/favourites/{id}",7L))
+                .andExpect(status().isNoContent());
+
+        verify(userService).getUserIdByUsername("alicej");
+        verify(userFavouritesService).removeFavouriteBook(1L,7L);
     }
 
 
