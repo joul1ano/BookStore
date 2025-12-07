@@ -7,6 +7,7 @@ import com.bookstore.config.JwtAuthenticationFilter;
 import com.bookstore.config.SecurityConfig;
 import com.bookstore.enums.Genre;
 import com.bookstore.enums.Role;
+import com.bookstore.exceptions.FavouriteAlreadyExistsException;
 import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.service.UserFavouritesService;
 import com.bookstore.service.UserService;
@@ -288,6 +289,20 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("POST /users/me/favourites/{bookId} - Fail - Book is already in favourites")
+    @WithMockUser(username = "alicej", roles = "USER")
+    void testAddBookToFavourites_AlreadyExists() throws Exception{
+        when(userService.getUserIdByUsername("alicej")).thenReturn(1L);
+        Exception ex = new FavouriteAlreadyExistsException("Book is already in favourites");
+        doThrow(ex).when(userFavouritesService).addBookToFavourites(1L,7L);
+
+        mockMvc.perform(post("/users/me/favourites/{bookId}",7L))
+                .andExpect(status().isConflict())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Book is already in favourites"));
+    }
+
+    @Test
     @DisplayName("POST /users/me/favourites/{bookId} - Fail - Book doesn't exist")
     @WithMockUser(username = "alicej", roles = "USER")
     void testAddBookToFavourites_Fail() throws Exception{
@@ -314,6 +329,25 @@ public class UserControllerTest {
 
         mockMvc.perform(delete("/users/me/favourites/{id}",7L))
                 .andExpect(status().isNoContent());
+
+        verify(userService).getUserIdByUsername("alicej");
+        verify(userFavouritesService).removeFavouriteBook(1L,7L);
+    }
+
+    //todo exei nohma to apo katw? efoson prin kanw
+    // add sta favourites, elegxw an yparxei
+    @Test
+    @DisplayName("DELETE /users/me/favourites/{bookId} - Fail")
+    @WithMockUser(username = "alicej", roles = "USER")
+    void testRemoveBookFromFavourites_NotFound() throws Exception {
+        when(userService.getUserIdByUsername("alicej")).thenReturn(1L);
+        ResourceNotFoundException ex = new ResourceNotFoundException("Book with id: 7 is not in favourites");
+        doThrow(ex).when(userFavouritesService).removeFavouriteBook(1L,7L);
+
+        mockMvc.perform(delete("/users/me/favourites/{bookId}",7L))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Book with id: 7 is not in favourites"));
 
         verify(userService).getUserIdByUsername("alicej");
         verify(userFavouritesService).removeFavouriteBook(1L,7L);
