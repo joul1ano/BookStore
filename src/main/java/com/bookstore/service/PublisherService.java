@@ -3,6 +3,7 @@ package com.bookstore.service;
 import com.bookstore.DTOs.PublisherDTO;
 import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.PublisherMapper;
+import com.bookstore.model.Publisher;
 import com.bookstore.repository.PublisherRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,10 @@ public class PublisherService {
     public PublisherService(PublisherRepository publisherRepository, PublisherMapper publisherMapper){
         this.publisherRepository = publisherRepository;
         this.publisherMapper = publisherMapper;
+    }
+
+    public PublisherDTO createPublisher(PublisherDTO publisherDTO){
+        return publisherMapper.toDTO(publisherRepository.save(publisherMapper.toEntity(publisherDTO)));
     }
 
     public List<PublisherDTO> getAllPublishers(){
