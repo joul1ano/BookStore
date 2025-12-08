@@ -38,8 +38,10 @@ public class BookService {
                 .orElseThrow(() -> new ResourceNotFoundException("Book with id: " + id + " not found"));
     }
 
-    //TODO MAKE SURE THAT THE PUBLISHER EXISTS BEFORE CREATING BOOK
+
     public BookDTO createBook(BookDTO bookDTO){
+        if (publisherRepository.findById(bookDTO.getPublisherId()).isEmpty())
+            throw new ResourceNotFoundException("Publisher with id: " + bookDTO.getPublisherId() + " does not exist");
         return bookMapper.toDTO(bookRepository.save(bookMapper.toEntity(bookDTO)));
 
     }
@@ -56,7 +58,7 @@ public class BookService {
         existingBook.setPrice(bookDTO.getPrice());
         existingBook.setAvailability(bookDTO.getAvailability());
         existingBook.setPublisher(publisherRepository.findById(bookDTO.getPublisherId())
-                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found")));
+                .orElseThrow(() -> new ResourceNotFoundException("Publisher with id: " + bookDTO.getPublisherId() + " does not exist")));
 
         return bookMapper.toDTO(bookRepository.save(existingBook));
 
