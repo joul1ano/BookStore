@@ -26,4 +26,7 @@ public class Publisher {
 
     @OneToMany(mappedBy = "publisher")
     private List<Book> books = new ArrayList<>();
+
+    public Publisher(long l, String pub) {
+    }
 }
