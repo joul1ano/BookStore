@@ -59,6 +59,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) //FETCHTYPE????
     private List<UserFavourite> favourites = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user",optional = false)
+    private ShoppingCart shoppingCart;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
