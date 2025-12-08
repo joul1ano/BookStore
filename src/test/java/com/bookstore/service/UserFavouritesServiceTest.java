@@ -70,4 +70,17 @@ public class UserFavouritesServiceTest {
         verify(bookMapper, times(2)).toDTO(any());
     }
 
+    @Test
+    @DisplayName("Get the authenticated user's list of favourite books - Fail - No books found")
+    void testGetAllFavourites_NotFound(){
+        when(favouritesRepository.findAllByUser_Id(1L)).thenReturn(List.of());
+
+        List<BookDTO> returned = userFavouritesService.getFavourites(1L);
+
+        Assertions.assertTrue(returned.isEmpty());
+
+        verify(favouritesRepository).findAllByUser_Id(1L);
+        verify(bookMapper,never()).toDTO(any());
+}
+
 }
