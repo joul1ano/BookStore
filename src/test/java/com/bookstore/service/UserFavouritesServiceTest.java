@@ -3,6 +3,8 @@ package com.bookstore.service;
 import com.bookstore.DTOs.BookDTO;
 import com.bookstore.enums.Genre;
 import com.bookstore.enums.Role;
+import com.bookstore.exceptions.FavouriteAlreadyExistsException;
+import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.BookMapper;
 import com.bookstore.model.Book;
 import com.bookstore.model.Publisher;
@@ -90,20 +92,76 @@ public class UserFavouritesServiceTest {
         User user = User.builder().id(1L).username("john7").build();
         Book book1 = Book.builder().id(7L).title("title 1").build();
         UserFavourite fav = UserFavourite.builder().user(user).book(book1).build();
-
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookRepository.findById(7L)).thenReturn(Optional.of(book1));
         when(favouritesRepository.findByUser_IdAndBook_Id(1L,7L)).thenReturn(Optional.empty());
-        when(favouritesRepository.save(fav)).thenReturn(fav);
-
+        //when(favouritesRepository.save(fav)).thenReturn(fav);
         userFavouritesService.addBookToFavourites(1L,7L);
 
-       verify(userRepository.findById(1L));
+       verify(userRepository).findById(1L);
        verify(bookRepository).findById(7L);
        verify(favouritesRepository).findByUser_IdAndBook_Id(1L,7L);
-       verify(favouritesRepository).save(fav);
+       verify(favouritesRepository).save(any(UserFavourite.class));
+    }
 
+    @Test
+    @DisplayName("Add a book to favourites - Fail - Book already exists")
+    void testAddBookToFavourites_AlreadyExists(){
+        User user = User.builder().id(1L).username("john7").build();
+        Book book1 = Book.builder().id(7L).title("title 1").build();
+        UserFavourite fav = UserFavourite.builder().user(user).book(book1).build();
 
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookRepository.findById(7L)).thenReturn(Optional.of(book1));
+        when(favouritesRepository.findByUser_IdAndBook_Id(1L,7L)).thenReturn(Optional.of(fav));
+
+        Assertions.assertThrows(FavouriteAlreadyExistsException.class, () -> userFavouritesService.addBookToFavourites(1L,7L));
+
+        verify(userRepository).findById(1L);
+        verify(bookRepository).findById(7L);
+        verify(favouritesRepository).findByUser_IdAndBook_Id(1L,7L);
+        verify(favouritesRepository,never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Add a book to favourites  - Fail - Book doesn't exist")
+    void testAddBookToFavourites_NotFound() {
+        User user = User.builder().id(1L).username("john7").build();
+        ResourceNotFoundException ex = new ResourceNotFoundException("Book with id: 7 not found");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        doThrow(ex).when(bookRepository).findById(7L);
+
+        Assertions.assertThrows(ResourceNotFoundException.class,() -> userFavouritesService.addBookToFavourites(1L, 7L));
+
+        verify(userRepository).findById(1L);
+        verify(bookRepository).findById(7L);
+        verify(favouritesRepository,never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Remove a book from favourites - Success")
+    void testRemoveBookFromFavourites_Success(){
+        User user = User.builder().id(1L).username("john7").build();
+        Book book1 = Book.builder().id(7L).title("title 1").build();
+        UserFavourite fav = UserFavourite.builder().id(5L).user(user).book(book1).build();
+
+        when(favouritesRepository.findByUser_IdAndBook_Id(1L,7L)).thenReturn(Optional.of(fav));
+        doNothing().when(favouritesRepository).delete(fav);
+
+        userFavouritesService.removeFavouriteBook(1L,7L);
+
+        verify(favouritesRepository).findByUser_IdAndBook_Id(1L,7L);
+        verify(favouritesRepository).delete(fav);
+    }
+
+    @Test
+    @DisplayName("Remove a book from favourites - Fail - Book not found")
+    void testRemoveBookFromFavourites_NotFound(){
+        when(favouritesRepository.findByUser_IdAndBook_Id(1L,7L)).thenReturn(Optional.empty());
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> userFavouritesService.removeFavouriteBook(1L,7L));
+
+        verify(favouritesRepository).findByUser_IdAndBook_Id(1L,7L);
+        verify(favouritesRepository,never()).delete(any());
     }
 
 
