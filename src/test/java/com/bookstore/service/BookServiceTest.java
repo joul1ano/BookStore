@@ -1,6 +1,7 @@
 package com.bookstore.service;
 
 import com.bookstore.DTOs.BookDTO;
+import com.bookstore.DTOs.PublisherDTO;
 import com.bookstore.enums.Genre;
 import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.BookMapper;
@@ -53,6 +54,7 @@ public class BookServiceTest {
         when(bookMapper.toEntity(Mockito.any(BookDTO.class))).thenReturn(mappedBook);
         when(bookRepository.save(Mockito.any(Book.class))).thenReturn(mappedBook);
         when(bookMapper.toDTO(Mockito.any(Book.class))).thenReturn(mappedBookDTO);
+        when(publisherRepository.findById(1L)).thenReturn(Optional.of(new Publisher(1L, "ianos", new ArrayList<>())));
 
         BookDTO savedBook = bookService.createBook(inputBookDTO);
 
@@ -77,6 +79,7 @@ public class BookServiceTest {
 
         when(bookMapper.toEntity(inputBookDTO)).thenReturn(mappedBook);
         when(bookRepository.save(mappedBook)).thenThrow(new RuntimeException("Database Error"));
+        when(publisherRepository.findById(4L)).thenReturn(Optional.of(new Publisher(4L, "ianos", new ArrayList<>())));
 
         RuntimeException ex = Assertions.assertThrows(RuntimeException.class
                 ,() -> bookService.createBook(inputBookDTO));
