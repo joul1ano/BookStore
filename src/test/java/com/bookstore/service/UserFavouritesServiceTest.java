@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyShort;
 import static org.mockito.Mockito.*;
@@ -81,6 +82,29 @@ public class UserFavouritesServiceTest {
 
         verify(favouritesRepository).findAllByUser_Id(1L);
         verify(bookMapper,never()).toDTO(any());
-}
+    }
+
+    @Test
+    @DisplayName("Add a book to favourites - Success")
+        void testAddBookToFavourites_Success(){
+        User user = User.builder().id(1L).username("john7").build();
+        Book book1 = Book.builder().id(7L).title("title 1").build();
+        UserFavourite fav = UserFavourite.builder().user(user).book(book1).build();
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookRepository.findById(7L)).thenReturn(Optional.of(book1));
+        when(favouritesRepository.findByUser_IdAndBook_Id(1L,7L)).thenReturn(Optional.empty());
+        when(favouritesRepository.save(fav)).thenReturn(fav);
+
+        userFavouritesService.addBookToFavourites(1L,7L);
+
+       verify(userRepository.findById(1L));
+       verify(bookRepository).findById(7L);
+       verify(favouritesRepository).findByUser_IdAndBook_Id(1L,7L);
+       verify(favouritesRepository).save(fav);
+
+
+    }
+
 
 }
