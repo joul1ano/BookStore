@@ -35,7 +35,7 @@ public class UserServiceTest {
     @DisplayName("Get a lsit of all users - Success")
     void testGetAllUsers_Found(){
         User user1 = User.builder()
-                .id(1l)
+                .id(1L)
                 .name("John")
                 .username("john7")
                 .password("123")
@@ -47,7 +47,7 @@ public class UserServiceTest {
                 .lastLoginAt(LocalDateTime.of(2025,12,4,19,0))
                 .build();
         User user2 = User.builder()
-                .id(2l)
+                .id(2L)
                 .name("Mario")
                 .username("MarioB")
                 .password("456")
@@ -61,7 +61,7 @@ public class UserServiceTest {
         List<User> users = Arrays.asList(user1,user2);
 
         UserDTO userDTO1 = UserDTO.builder()
-                .id(1l)
+                .id(1L)
                 .name("John")
                 .username("john7")
                 .email("johnex@gmail.com")
@@ -72,7 +72,7 @@ public class UserServiceTest {
                 .lastLoginAt(LocalDateTime.of(2025,12,4,19,0))
                 .build();
         UserDTO userDTO2 = UserDTO.builder()
-                .id(2l)
+                .id(2L)
                 .name("Mario")
                 .username("MarioB")
                 .email("marioitaly@gmail.com")
@@ -114,7 +114,7 @@ public class UserServiceTest {
     @DisplayName("Get user by id - Success")
     void getUserById_Found(){
         User user = User.builder()
-                .id(1l)
+                .id(1L)
                 .name("John")
                 .username("john7")
                 .password("123")
@@ -126,7 +126,7 @@ public class UserServiceTest {
                 .lastLoginAt(LocalDateTime.of(2025,12,4,19,0))
                 .build();
         UserDTO userDTO = UserDTO.builder()
-                .id(1l)
+                .id(1L)
                 .name("John")
                 .username("john7")
                 .email("johnex@gmail.com")
