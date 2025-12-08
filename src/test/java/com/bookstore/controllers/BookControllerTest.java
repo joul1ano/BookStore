@@ -141,12 +141,32 @@ class BookControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
+    @DisplayName("Returns 400 bad request when trying to create a book with non existent publisher")
+    void testCreateBook_Fail_NonExistentPublisher() throws Exception {
+        BookDTO bookDTO = new BookDTO(null, "Python", "John Doe", "Learning Python",
+                Genre.HORROR, 282, 29.80, 105, 600L);
+        ResourceNotFoundException ex = new ResourceNotFoundException("Publisher with id: 600 does not exist");
+        doThrow(ex).when(bookService).createBook(bookDTO);
+
+        ObjectMapper objMapper = new ObjectMapper();
+        String bookInJson = objMapper.writeValueAsString(bookDTO);
+
+        mockMvc.perform(post("/books")
+                        .contentType(MediaType.APPLICATION_JSON)   // <--- important!
+                        .content(bookInJson))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Publisher with id: 600 does not exist"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Returns 204 No Content when a book is deleted successfully")
     void testDeleteBookById_Success() throws Exception{
         doNothing().when(bookService).deleteBookById(5L);
         mockMvc.perform(delete("/books/{id}", 5))
                 .andExpect(status().isNoContent());
     }
+
 
     @Test
     @WithMockUser(roles = "ADMIN")
