@@ -1,10 +1,9 @@
 package com.bookstore.controllers;
 
-import com.bookstore.DTOs.BookDTO;
-import com.bookstore.DTOs.UserDTO;
-import com.bookstore.DTOs.UserMeDTO;
+import com.bookstore.DTOs.*;
 import com.bookstore.enums.Role;
 import com.bookstore.mappers.UserMapper;
+import com.bookstore.service.ShoppingCartService;
 import com.bookstore.service.UserFavouritesService;
 import com.bookstore.service.UserService;
 import jakarta.validation.constraints.Positive;
@@ -25,10 +24,12 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final UserFavouritesService favouritesService;
+    private final ShoppingCartService cartService;
 
-    public UserController(UserService userService,UserFavouritesService favouritesService){
+    public UserController(UserService userService,UserFavouritesService favouritesService,ShoppingCartService cartService){
         this.favouritesService = favouritesService;
         this.userService = userService;
+        this.cartService = cartService;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -44,6 +45,9 @@ public class UserController {
             @PathVariable Long id){
         return ResponseEntity.ok(userService.getUserById(id));
     }
+
+
+    //------------------------   /me   --------------------------------------
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/me")
@@ -82,6 +86,15 @@ public class UserController {
         favouritesService.removeFavouriteBook(userId,bookId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("me/cart")
+    public ResponseEntity<ShoppingCartDTO> getCart(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = userService.getUserIdByUsername(auth.getName());
+
+        return ResponseEntity.ok(cartService.getCart(userId));
     }
 
 }
