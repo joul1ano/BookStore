@@ -34,20 +34,35 @@ public class ShoppingCartService {
         return cartMapper.toDTO(cartRepository.findByUserId(userId));
     }
 
+    public void cleanUp(){
+        ShoppingCart x = cartRepository.findById(1L).orElseThrow();
+        x.setItemCount(0);
+        x.setTotalCost(0);
+        cartRepository.save(x);
+    }
+
     public void addItemToCart(Long userId, Long bookId, int quantity){
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book with id: " + bookId + " not found"));
         ShoppingCart cart = cartRepository.findByUserId(userId);
-        ShoppingCartItem item = ShoppingCartItem.builder().shoppingCart(cart).book(book).quantity(quantity).build();
+
+        ShoppingCartItem item = new ShoppingCartItem();
+        if(itemsRepository.existsByBook_IdAndShoppingCart_Id(bookId, cart.getId())){
+            item = itemsRepository.findByBook_IdAndShoppingCart_Id(bookId, cart.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+            item.setQuantity(item.getQuantity() + quantity);
+        }else {
+            item = ShoppingCartItem.builder().shoppingCart(cart).book(book).quantity(quantity).build();
+        }
 
         itemsRepository.save(item);
-        updateCartStatus(cart,item);
+        updateCartStatus(cart,quantity,book.getPrice());
     }
 
-    public void updateCartStatus(ShoppingCart cart, ShoppingCartItem item){
+    public void updateCartStatus(ShoppingCart cart, int quantity, double price){
         cart.setLastUpdatedAt(LocalDateTime.now());
-        cart.setItemCount(cart.getItemCount() + item.getQuantity());
-        cart.setTotalCost(cart.getTotalCost() + item.getBook().getPrice()* item.getQuantity());
+        cart.setItemCount(cart.getItemCount() + quantity);
+        cart.setTotalCost(cart.getTotalCost() + quantity * price);
         cartRepository.save(cart);
     }
 }
