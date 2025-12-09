@@ -1,10 +1,7 @@
 package com.bookstore.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Table(name = "shopping_cart_items")
 @Entity
+@ToString(exclude = "shoppingCart")
 public class ShoppingCartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

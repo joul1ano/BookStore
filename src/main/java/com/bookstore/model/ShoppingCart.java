@@ -1,10 +1,7 @@
 package com.bookstore.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,6 +14,7 @@ import java.util.List;
 @Data
 @Table(name = "shopping_carts")
 @Entity
+@ToString(exclude = {"user", "shoppingCartItems"})
 public class ShoppingCart {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ShoppingCartItemDTO {
     private Long shoppingCartId;
-    private BookDTO book;
+    private BookDTO bookDTO;
     private Integer quantity;
 }

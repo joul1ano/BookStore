@@ -3,10 +3,7 @@ package com.bookstore.model;
 import com.bookstore.enums.Genre;
 import com.bookstore.enums.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +19,13 @@ import java.util.List;
 @Data
 @Table(name = "users")
 @Entity
+@ToString(exclude = {"shoppingCart","favourites"})
+/*
+    otan kanw user.get(ShoppingCart), prospathei na kanei kathe pedio tou shoppingCart se .toString() ,
+    omws to shopping cart exei ena pedio user , opote paei na kanei shoppingCart.get(user).toString()
+    omws to user exei ena pedio shopping cart kai ginetai mia apeirh loupa, to idio symvainei k an arxika
+    kanw cart.get(user) , giafto lew na mhm kanei toString kapoia pedia
+*/
 public class User implements UserDetails {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

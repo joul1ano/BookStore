@@ -3,6 +3,7 @@ package com.bookstore.controllers;
 import com.bookstore.DTOs.*;
 import com.bookstore.enums.Role;
 import com.bookstore.mappers.UserMapper;
+import com.bookstore.model.AddItemRequest;
 import com.bookstore.service.ShoppingCartService;
 import com.bookstore.service.UserFavouritesService;
 import com.bookstore.service.UserService;
@@ -96,5 +97,23 @@ public class UserController {
 
         return ResponseEntity.ok(cartService.getCart(userId));
     }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("me/cart/items")
+    public ResponseEntity<List<ShoppingCartItemDTO>> getCartItems(){
+        //TODO
+        return ResponseEntity.ok(List.of());
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("me/cart/items")
+    public ResponseEntity<Void> addBookToCart(@RequestBody AddItemRequest request){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = userService.getUserIdByUsername(auth.getName());
+
+        cartService.addItemToCart(userId,request.getBookId(),request.getQuantity());
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

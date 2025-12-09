@@ -1,10 +1,7 @@
 package com.bookstore.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +12,7 @@ import java.util.List;
 @Data
 @Table(name = "publishers")
 @Entity
+@ToString(exclude = "books")
 public class Publisher {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +25,4 @@ public class Publisher {
     @OneToMany(mappedBy = "publisher")
     private List<Book> books = new ArrayList<>();
 
-    public Publisher(long l, String pub) {
-    }
 }
