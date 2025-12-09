@@ -1,7 +1,9 @@
 package com.bookstore.service;
 
 import com.bookstore.DTOs.ShoppingCartDTO;
+import com.bookstore.DTOs.ShoppingCartItemDTO;
 import com.bookstore.exceptions.ResourceNotFoundException;
+import com.bookstore.mappers.CartItemMapper;
 import com.bookstore.mappers.ShoppingCartMapper;
 import com.bookstore.model.Book;
 import com.bookstore.model.ShoppingCart;
@@ -12,30 +14,40 @@ import com.bookstore.repository.ShoppingCartRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class ShoppingCartService {
     private final ShoppingCartRepository cartRepository;
     private final ShoppingCartItemsRepository itemsRepository;
     private final ShoppingCartMapper cartMapper;
+    private final CartItemMapper cartItemMapper;
     private final BookRepository bookRepository;
 
     public ShoppingCartService(ShoppingCartRepository cartRepository,
                                ShoppingCartMapper cartMapper,
                                BookRepository bookRepository,
-                               ShoppingCartItemsRepository itemsRepository){
+                               ShoppingCartItemsRepository itemsRepository,
+                               CartItemMapper cartItemMapper){
         this.cartRepository = cartRepository;
         this.cartMapper = cartMapper;
         this.bookRepository = bookRepository;
         this.itemsRepository = itemsRepository;
+        this.cartItemMapper = cartItemMapper;
     }
 
     public ShoppingCartDTO getCart(Long userId) {
         return cartMapper.toDTO(cartRepository.findByUserId(userId));
     }
 
-    public void cleanUp(){
-        ShoppingCart x = cartRepository.findById(1L).orElseThrow();
+    public List<ShoppingCartItemDTO> getCartItems(Long userId){
+        Long cartId = cartRepository.findByUserId(userId).getId();
+
+        return itemsRepository.findAllByShoppingCart_Id(cartId).stream().map(cartItemMapper::toDTO).toList();
+    }
+
+    public void cleanUp(Long id){
+        ShoppingCart x = cartRepository.findById(id).orElseThrow();
         x.setItemCount(0);
         x.setTotalCost(0);
         cartRepository.save(x);

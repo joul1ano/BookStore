@@ -101,8 +101,10 @@ public class UserController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("me/cart/items")
     public ResponseEntity<List<ShoppingCartItemDTO>> getCartItems(){
-        //TODO
-        return ResponseEntity.ok(List.of());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = userService.getUserIdByUsername(auth.getName());
+
+        return ResponseEntity.ok(cartService.getCartItems(userId));
     }
 
     @PreAuthorize("hasRole('USER')")
