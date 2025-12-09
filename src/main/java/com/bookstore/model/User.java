@@ -102,9 +102,4 @@ public class User implements UserDetails {
         return true;
     }
 
-//    @OneToOne(mappedBy = "user")
-//    private ShoppingCart shoppingCart;
-//
-//    @OneToMany(mappedBy = "user")
-//    private List<Order> orders = new ArrayList<>();
 }

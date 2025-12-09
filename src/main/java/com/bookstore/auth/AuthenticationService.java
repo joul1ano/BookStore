@@ -3,7 +3,10 @@ package com.bookstore.auth;
 import com.bookstore.config.JwtService;
 import com.bookstore.enums.Role;
 import com.bookstore.exceptions.UsernameAlreadyExistsException;
+import com.bookstore.model.ShoppingCart;
+import com.bookstore.model.ShoppingCartItem;
 import com.bookstore.model.User;
+import com.bookstore.repository.ShoppingCartRepository;
 import com.bookstore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,11 +15,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
     private final UserRepository userRepository;
+    private final ShoppingCartRepository cartRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -36,8 +42,11 @@ public class AuthenticationService {
                 .createdAt(LocalDateTime.now())
                 .lastLoginAt(LocalDateTime.now())
                 .build();
-
+        //TODO - AUTOMATICALLY CREATE THE SHOPPING CART
         userRepository.save(user);
+
+        var cart = ShoppingCart.builder().user(user).itemCount(0).totalCost(0).lastUpdatedAt(LocalDateTime.now()).build();
+        cartRepository.save(cart);
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
