@@ -65,10 +65,20 @@ public class ShoppingCartService {
         updateCartStatus(cart,quantity,book.getPrice());
     }
 
-    public void  updateItemQuantity(Long userId, Long bookId, int newQuantity){
+    public void  updateItemQuantity(Long userId, Long bookId, Integer newQuantity){
+        if(newQuantity == 0)
+            removeItemFromCart(userId,bookId);
+
         ShoppingCart cart = cartRepository.findByUserId(userId);
         ShoppingCartItem item = itemsRepository.findByBook_IdAndShoppingCart_Id(bookId, cart.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+
+        int quantityDiff = newQuantity - item.getQuantity();
+        item.setQuantity(newQuantity);
+
+        itemsRepository.save(item);
+        updateCartStatus(cart,quantityDiff,item.getBook().getPrice());
+
     }
 
     @Transactional

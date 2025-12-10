@@ -1,16 +1,12 @@
 package com.bookstore.controllers;
 
 import com.bookstore.DTOs.*;
-import com.bookstore.enums.Role;
-import com.bookstore.mappers.UserMapper;
-import com.bookstore.model.AddItemRequest;
+import com.bookstore.DTOs.AddItemRequest;
 import com.bookstore.service.ShoppingCartService;
 import com.bookstore.service.UserFavouritesService;
 import com.bookstore.service.UserService;
 import jakarta.validation.constraints.Positive;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -116,16 +112,17 @@ public class UserController {
         Long userId = userService.getUserIdByUsername(auth.getName());
 
         cartService.addItemToCart(userId,request.getBookId(),request.getQuantity());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasRole('USER')")
     @PutMapping("me/cart/items/{bookId}")
-    public ResponseEntity<Void> updateBookQuantity(@PathVariable Long bookId,@RequestBody int newQuantity){
+    public ResponseEntity<Void> updateBookQuantity(@PathVariable Long bookId,@RequestBody UpdateItemRequest request){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Long userId = userService.getUserIdByUsername(auth.getName());
 
-        cartService.updateItemQuantity(userId,bookId,newQuantity)
+        cartService.updateItemQuantity(userId,bookId,request.getQuantity());
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasRole('USER')")
