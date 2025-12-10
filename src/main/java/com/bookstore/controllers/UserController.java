@@ -105,6 +105,8 @@ public class UserController {
         Long userId = userService.getUserIdByUsername(auth.getName());
 
         return ResponseEntity.ok(cartService.getCartItems(userId));
+//        cartService.cleanUp(1L);
+//        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasRole('USER')")
@@ -114,6 +116,25 @@ public class UserController {
         Long userId = userService.getUserIdByUsername(auth.getName());
 
         cartService.addItemToCart(userId,request.getBookId(),request.getQuantity());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping("me/cart/items/{bookId}")
+    public ResponseEntity<Void> updateBookQuantity(@PathVariable Long bookId,@RequestBody int newQuantity){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = userService.getUserIdByUsername(auth.getName());
+
+        cartService.updateItemQuantity(userId,bookId,newQuantity)
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @DeleteMapping("me/cart/items/{bookId}")
+    public ResponseEntity<Void> removeBookFromCart(@PathVariable Long bookId){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = userService.getUserIdByUsername(auth.getName());
+
+        cartService.removeItemFromCart(userId,bookId);
         return ResponseEntity.noContent().build();
     }
 

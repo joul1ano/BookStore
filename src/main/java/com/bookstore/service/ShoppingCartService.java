@@ -11,6 +11,7 @@ import com.bookstore.model.ShoppingCartItem;
 import com.bookstore.repository.BookRepository;
 import com.bookstore.repository.ShoppingCartItemsRepository;
 import com.bookstore.repository.ShoppingCartRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -58,17 +59,26 @@ public class ShoppingCartService {
                 .orElseThrow(() -> new ResourceNotFoundException("Book with id: " + bookId + " not found"));
         ShoppingCart cart = cartRepository.findByUserId(userId);
 
-        ShoppingCartItem item = new ShoppingCartItem();
-        if(itemsRepository.existsByBook_IdAndShoppingCart_Id(bookId, cart.getId())){
-            item = itemsRepository.findByBook_IdAndShoppingCart_Id(bookId, cart.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
-            item.setQuantity(item.getQuantity() + quantity);
-        }else {
-            item = ShoppingCartItem.builder().shoppingCart(cart).book(book).quantity(quantity).build();
-        }
+        ShoppingCartItem item = ShoppingCartItem.builder().shoppingCart(cart).book(book).quantity(quantity).build();
 
         itemsRepository.save(item);
         updateCartStatus(cart,quantity,book.getPrice());
+    }
+
+    public void  updateItemQuantity(Long userId, Long bookId, int newQuantity){
+        ShoppingCart cart = cartRepository.findByUserId(userId);
+        ShoppingCartItem item = itemsRepository.findByBook_IdAndShoppingCart_Id(bookId, cart.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+    }
+
+    @Transactional
+    public void removeItemFromCart(Long userId, Long bookId){
+        ShoppingCart cart = cartRepository.findByUserId(userId);
+        ShoppingCartItem item = itemsRepository.findByBook_IdAndShoppingCart_Id(bookId,cart.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+        itemsRepository.deleteByBook_IdAndShoppingCart_Id(bookId, cart.getId());
+        int quantity = item.getQuantity();
+        updateCartStatus(cart,(-1)*quantity,item.getBook().getPrice());
     }
 
     public void updateCartStatus(ShoppingCart cart, int quantity, double price){

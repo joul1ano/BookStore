@@ -12,4 +12,5 @@ public interface ShoppingCartItemsRepository extends JpaRepository<ShoppingCartI
     Optional<ShoppingCartItem> findByBook_IdAndShoppingCart_Id(Long bookId, Long shoppingCartId);
     boolean existsByBook_IdAndShoppingCart_Id(Long bookId, Long shoppingCartId);
     List<ShoppingCartItem> findAllByShoppingCart_Id(Long shoppingCartId);
+    void deleteByBook_IdAndShoppingCart_Id(Long BookId, Long shoppingCartId);
 }
