@@ -61,11 +61,17 @@ public class ShoppingCartService {
 
         ShoppingCartItem item = ShoppingCartItem.builder().shoppingCart(cart).book(book).quantity(quantity).build();
 
-        itemsRepository.save(item);
-        updateCartStatus(cart,quantity,book.getPrice());
+        //todo na rwthsw. auto se periptwsh [ou thelei na afkhsei to quantity enos vivliou pou yparxei hdh alla katalathos
+        //xrhsimopoisei post anti gia put. Mhpws kaluytera na petaw ena exception?
+        if(itemsRepository.existsByBook_IdAndShoppingCart_Id(bookId, cart.getId())){
+            updateItemQuantity(userId,bookId,quantity);
+        }else {
+            itemsRepository.save(item);
+            updateCartStatus(cart,quantity,book.getPrice());
+        }
     }
 
-    public void  updateItemQuantity(Long userId, Long bookId, Integer newQuantity){
+    public void updateItemQuantity(Long userId, Long bookId, Integer newQuantity){
         if(newQuantity == 0)
             removeItemFromCart(userId,bookId);
 
