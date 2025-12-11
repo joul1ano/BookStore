@@ -34,8 +34,8 @@ public class PublisherServiceTest {
     @DisplayName("Create a publisher - Success")
     void createPublisher_SavesAndReturnsDTO() {
         PublisherDTO dto = new PublisherDTO(null, "Test Pub");
-        Publisher entity = new Publisher(1L, "Test Pub");
-        Publisher savedEntity = new Publisher(1L, "Test Pub");
+        Publisher entity = Publisher.builder().id(1L).name("Test Pub").build();
+        Publisher savedEntity = Publisher.builder().id(1L).name("Test Pub").build();
         PublisherDTO mappedDto = new PublisherDTO(1L, "Test Pub");
 
         when(publisherMapper.toEntity(dto)).thenReturn(entity);
@@ -51,7 +51,7 @@ public class PublisherServiceTest {
     @Test
     @DisplayName("Get all publishers - Success")
     void getAllPublishers_ReturnsMappedList() {
-        Publisher entity = new Publisher(1L, "Pub");
+        Publisher entity = Publisher.builder().id(1L).name("Pub").build();
         PublisherDTO dto = new PublisherDTO(1L, "Pub");
 
         when(publisherRepository.findAll()).thenReturn(List.of(entity));
@@ -66,7 +66,7 @@ public class PublisherServiceTest {
     @Test
     @DisplayName("Get publisher by id - Success")
     void getPublisherById_Found() {
-        Publisher entity = new Publisher(1L, "Pub");
+        Publisher entity = Publisher.builder().id(1L).name("Pub").build();
         PublisherDTO dto = new PublisherDTO(1L, "Pub");
 
         when(publisherRepository.findById(1L)).thenReturn(Optional.of(entity));
