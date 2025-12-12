@@ -3,6 +3,7 @@ package com.bookstore.service;
 import com.bookstore.DTOs.BookDTO;
 import com.bookstore.DTOs.ShoppingCartDTO;
 import com.bookstore.DTOs.ShoppingCartItemDTO;
+import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.CartItemMapper;
 import com.bookstore.mappers.ShoppingCartMapper;
 import com.bookstore.model.Book;
@@ -22,9 +23,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ShoppingCartServiceTest {
@@ -103,6 +104,58 @@ public class ShoppingCartServiceTest {
 
         Assertions.assertNotNull(actual);
         Assertions.assertEquals(actual,List.of(item1DTO,item2DTO));
+
+    }
+
+    @Test
+    @DisplayName("Get cart items - Not items found")
+    void testGetCartItems_NoItemsFound(){
+        when(cartRepository.findByUserId(1L))
+                .thenReturn(ShoppingCart.builder().id(5L).user(User.builder().id(1L).build()).build());
+        when(itemsRepository.findAllByShoppingCart_Id(5L)).thenReturn(List.of());
+
+        List<ShoppingCartItemDTO> actual = cartService.getCartItems(1L);
+
+        Assertions.assertTrue(actual.isEmpty());
+        verify(cartRepository).findByUserId(1L);
+        verify(itemsRepository).findAllByShoppingCart_Id(5L);
+        verify(itemMapper,never()).toDTO(any());
+    }
+
+    @Test
+    @DisplayName("Add item to cart - Success")
+    void testAddItemToCart_Success(){
+        Book book = Book.builder().id(10L).title("abc").price(10.0).build();
+        ShoppingCart cart = ShoppingCart.builder().id(5L).user(User.builder().id(1L).build()).build();
+        ShoppingCartItem item = ShoppingCartItem.builder().shoppingCart(cart).book(book).quantity(1).build();
+        ShoppingCartItem savedItem = ShoppingCartItem.builder().id(50L).shoppingCart(cart).book(book).quantity(1).build();
+
+        when(bookRepository.findById(10L)).thenReturn(Optional.of(book));
+        when(cartRepository.findByUserId(1L)).thenReturn(cart);
+        when(itemsRepository.save(item)).thenReturn(savedItem);
+
+        cartService.addItemToCart(1L,10L,1);
+
+        verify(bookRepository).findById(10L);
+        verify(cartRepository).findByUserId(1L);
+        verify(itemsRepository).save(item);
+    }
+
+    @Test
+    @DisplayName("Add item to cart - Fail - Book doesn't exist")
+    void testAddItemToCart_BookNotFound(){
+        when(bookRepository.findById(1L)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> cartService.addItemToCart(1L,1L,1));
+
+        verify(bookRepository).findById(1L);
+        verify(cartRepository,never()).findByUserId(5L);
+        verify(itemsRepository,never()).save(any());
+    }
+
+    @Test
+    @DisplayName("updateItemQuanity - Update an item's quantity - Success")
+    void testUpdateItemQuantity_Success(){
 
     }
 
