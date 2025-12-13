@@ -13,13 +13,13 @@ import com.bookstore.model.User;
 import com.bookstore.repository.BookRepository;
 import com.bookstore.repository.ShoppingCartItemsRepository;
 import com.bookstore.repository.ShoppingCartRepository;
+import io.micrometer.common.annotation.ValueExpressionResolver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
@@ -141,6 +141,7 @@ public class ShoppingCartServiceTest {
         verify(bookRepository).findById(10L);
         verify(cartRepository).findByUserId(1L);
         verify(itemsRepository).save(item);
+        verify(cartRepository).save(cart);
     }
 
     @Test
@@ -153,6 +154,7 @@ public class ShoppingCartServiceTest {
         verify(bookRepository).findById(1L);
         verify(cartRepository,never()).findByUserId(5L);
         verify(itemsRepository,never()).save(any());
+        verify(cartRepository,never()).save(any());
     }
 
     @Test
@@ -171,6 +173,7 @@ public class ShoppingCartServiceTest {
         verify(cartRepository).findByUserId(10L);
         verify(itemsRepository).findByBook_IdAndShoppingCart_Id(5L,1L);
         verify(itemsRepository).save(any());
+        verify(cartRepository).save(cart);
     }
 
     @Test
@@ -192,7 +195,54 @@ public class ShoppingCartServiceTest {
     @Test
     @DisplayName("updateItemQuanity - New quantity is 0 -> Item deleted")
     void testUpdateItemQuantity_ItemIsRemoved(){
+        ShoppingCart cart = ShoppingCart
+                .builder().id(5L).user(User.builder().id(1L).build()).build();
+        ShoppingCartItem item = ShoppingCartItem.builder()
+                .id(100L).book(Book.builder().id(100L).price(5.0).build()).quantity(1).build();
+        when(cartRepository.findByUserId(1L)).thenReturn(cart);
+        when(itemsRepository.findByBook_IdAndShoppingCart_Id(100L,5L)).thenReturn(Optional.of(item));
 
+        cartService.updateItemQuantity(1L,100L,0);
+
+        verify(cartRepository).findByUserId(1L);
+        verify(itemsRepository).findByBook_IdAndShoppingCart_Id(100L,5L);
+        verify(itemsRepository,never()).save(any());
+        verify(cartRepository).save(cart);
+    }
+
+    @Test
+    @DisplayName("Remove item from cart - Success")
+    void testRemoveItemFromCart_Success(){
+        ShoppingCart cart = ShoppingCart
+                .builder().id(5L).user(User.builder().id(1L).build()).build();
+        ShoppingCartItem item = ShoppingCartItem.builder()
+                .id(100L).book(Book.builder().id(100L).price(5.0).build()).quantity(1).build();
+        when(cartRepository.findByUserId(1L)).thenReturn(cart);
+        when(itemsRepository.findByBook_IdAndShoppingCart_Id(100L,5L)).thenReturn(Optional.of(item));
+        doNothing().when(itemsRepository).deleteByBook_IdAndShoppingCart_Id(100L,5L);
+
+        cartService.removeItemFromCart(1L,100L);
+
+        verify(cartRepository).findByUserId(1L);
+        verify(itemsRepository).findByBook_IdAndShoppingCart_Id(100L,5L);
+        verify(itemsRepository).deleteByBook_IdAndShoppingCart_Id(100L,5L);
+        verify(cartRepository).save(cart);
+    }
+
+    @Test
+    @DisplayName("Remove item from cart - Wrong book id - Fail")
+    void testRemoveItemFromCart_BookNotFound(){
+        ShoppingCart cart = ShoppingCart
+                .builder().id(5L).user(User.builder().id(1L).build()).build();
+        when(cartRepository.findByUserId(1L)).thenReturn(cart);
+        when(itemsRepository.findByBook_IdAndShoppingCart_Id(100L,5L)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException ex = Assertions.assertThrows(ResourceNotFoundException.class, () -> cartService.removeItemFromCart(1L,100L));
+        Assertions.assertEquals(ex.getMessage(),"Item not found");
+
+        verify(cartRepository).findByUserId(1L);
+        verify(itemsRepository,never()).deleteByBook_IdAndShoppingCart_Id(100L,5L);
+        verify(cartRepository,never()).save(any());
     }
 
 }
