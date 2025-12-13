@@ -189,4 +189,10 @@ public class ShoppingCartServiceTest {
         verify(itemsRepository,never()).save(any());
     }
 
+    @Test
+    @DisplayName("updateItemQuanity - New quantity is 0 -> Item deleted")
+    void testUpdateItemQuantity_ItemIsRemoved(){
+
+    }
+
 }
