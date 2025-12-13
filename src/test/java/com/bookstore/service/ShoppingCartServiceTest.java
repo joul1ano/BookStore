@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
@@ -39,6 +40,7 @@ public class ShoppingCartServiceTest {
     private ShoppingCartItemsRepository itemsRepository;
     @Mock
     private CartItemMapper itemMapper;
+
     @InjectMocks
     private ShoppingCartService cartService;
 
@@ -156,7 +158,35 @@ public class ShoppingCartServiceTest {
     @Test
     @DisplayName("updateItemQuanity - Update an item's quantity - Success")
     void testUpdateItemQuantity_Success(){
+        ShoppingCart cart = ShoppingCart.builder().id(1L).user(User.builder().id(10L).build()).build();
+        ShoppingCartItem item = ShoppingCartItem.builder().id(100L).book(Book.builder().id(5L).price(5.0).build()).quantity(1).build();
 
+        when(cartRepository.findByUserId(10L)).thenReturn(cart);
+        when(itemsRepository.findByBook_IdAndShoppingCart_Id(5L,1L)).thenReturn(Optional.of(item));
+
+        cartService.updateItemQuantity(10L,5L,2);
+
+        Assertions.assertEquals(item.getQuantity(),2);
+
+        verify(cartRepository).findByUserId(10L);
+        verify(itemsRepository).findByBook_IdAndShoppingCart_Id(5L,1L);
+        verify(itemsRepository).save(any());
+    }
+
+    @Test
+    @DisplayName("updateItemQuanity - Book id doesn't exist - Fail")
+    void testUpdateItemQuantity_BookNotFound(){
+        ShoppingCart cart = ShoppingCart
+                .builder().id(5L).user(User.builder().id(1L).build()).build();
+
+        when(cartRepository.findByUserId(1L)).thenReturn(cart);
+        when(itemsRepository.findByBook_IdAndShoppingCart_Id(10L,5L)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> cartService.updateItemQuantity(1L,10L,1));
+
+        verify(cartRepository).findByUserId(1L);
+        verify(itemsRepository).findByBook_IdAndShoppingCart_Id(10L,5L);
+        verify(itemsRepository,never()).save(any());
     }
 
 }

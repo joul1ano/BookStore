@@ -91,7 +91,7 @@ public class ShoppingCartService {
         updateCartStatus(cart,(-1)*quantity,item.getBook().getPrice());
     }
 
-    public void updateCartStatus(ShoppingCart cart, int quantity, double price){
+    private void updateCartStatus(ShoppingCart cart, int quantity, double price){
         cart.setLastUpdatedAt(LocalDateTime.now());
         cart.setItemCount(cart.getItemCount() + quantity);
         cart.setTotalCost(cart.getTotalCost() + quantity * price);
