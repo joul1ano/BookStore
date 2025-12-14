@@ -9,8 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-import static org.mockito.Mockito.*;
-
 class BookMapperTest {
 
     private final BookMapper bookMapper = Mappers.getMapper(BookMapper.class);

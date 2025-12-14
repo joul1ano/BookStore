@@ -8,10 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-
 import java.time.LocalDateTime;
-
-import static org.mockito.Mockito.verify;
 
 public class UserMapperTest {
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);

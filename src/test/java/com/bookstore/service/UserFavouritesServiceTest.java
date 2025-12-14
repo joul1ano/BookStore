@@ -1,13 +1,10 @@
 package com.bookstore.service;
 
 import com.bookstore.DTOs.BookDTO;
-import com.bookstore.enums.Genre;
-import com.bookstore.enums.Role;
 import com.bookstore.exceptions.FavouriteAlreadyExistsException;
 import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.BookMapper;
 import com.bookstore.model.Book;
-import com.bookstore.model.Publisher;
 import com.bookstore.model.User;
 import com.bookstore.model.UserFavourite;
 import com.bookstore.repository.BookRepository;
@@ -20,13 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.anyShort;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

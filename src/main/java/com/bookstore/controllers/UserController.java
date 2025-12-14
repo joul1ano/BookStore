@@ -4,7 +4,6 @@ import com.bookstore.DTOs.*;
 import com.bookstore.DTOs.requests.AddItemRequest;
 import com.bookstore.DTOs.requests.UpdateItemRequest;
 import com.bookstore.service.ShoppingCartService;
-import com.bookstore.service.UserFavouritesService;
 import com.bookstore.service.UserService;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +20,9 @@ import java.util.List;
 @Validated
 public class UserController {
     private final UserService userService;
-    private final UserFavouritesService favouritesService;
     private final ShoppingCartService cartService;
 
-    public UserController(UserService userService,UserFavouritesService favouritesService,ShoppingCartService cartService){
-        this.favouritesService = favouritesService;
+    public UserController(UserService userService,ShoppingCartService cartService){
         this.userService = userService;
         this.cartService = cartService;
     }
