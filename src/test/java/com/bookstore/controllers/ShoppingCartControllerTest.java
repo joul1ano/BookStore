@@ -4,8 +4,10 @@ import com.bookstore.DTOs.BookDTO;
 import com.bookstore.DTOs.ShoppingCartDTO;
 import com.bookstore.DTOs.ShoppingCartItemDTO;
 import com.bookstore.DTOs.requests.AddItemRequest;
+import com.bookstore.DTOs.requests.UpdateItemRequest;
 import com.bookstore.config.JwtAuthenticationFilter;
 import com.bookstore.config.SecurityConfig;
+import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.model.ShoppingCart;
 import com.bookstore.model.User;
 import com.bookstore.service.ShoppingCartService;
@@ -24,6 +26,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -132,7 +135,117 @@ public class ShoppingCartControllerTest {
 
         verify(userService).getUserIdByUsername("tzouliano");
         verify(cartService).addItemToCart(1L,100L,1);
-
     }
+
+    @Test
+    @DisplayName("POST /users/me/cart/items - Book doesn't exist")
+    @WithMockUser(username = "tzouliano", roles = "USER")
+    void testAddItemToCart_BookNotFound() throws Exception{
+        AddItemRequest request = AddItemRequest.builder().bookId(100L).quantity(1).build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestInJson = objectMapper.writeValueAsString(request);
+
+        ResourceNotFoundException ex = new ResourceNotFoundException("Book with id: 100 not found");
+        when(userService.getUserIdByUsername("tzouliano")).thenReturn(1L);
+        doThrow(ex).when(cartService).addItemToCart(1L,100L,1);
+
+        mockMvc.perform(post("/users/me/cart/items").contentType(MediaType.APPLICATION_JSON).content(requestInJson))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+                .andExpect(jsonPath("$.message").value("Book with id: 100 not found"));
+
+        verify(userService).getUserIdByUsername("tzouliano");
+        verify(cartService).addItemToCart(1L,100L,1);
+    }
+
+    @Test
+    @DisplayName("POST /users/me/cart/items - Quantity given is negative - Fail")
+    @WithMockUser(username = "tzouliano", roles = "USER")
+    void testAddItemToCart_NegativeQuantity() throws Exception{
+        AddItemRequest request = AddItemRequest.builder().bookId(100L).quantity(-1).build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestInJson = objectMapper.writeValueAsString(request);
+
+        mockMvc.perform(post("/users/me/cart/items").contentType(MediaType.APPLICATION_JSON).content(requestInJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message.quantity").value("Quantity must be a non-negative number"));
+
+        verify(userService,never()).getUserIdByUsername("tzouliano");
+        verify(cartService,never()).addItemToCart(anyLong(),anyLong(),anyInt());
+    }
+
+    @Test
+    @DisplayName("POST /users/me/cart/items - Both book id and quantity are negative - Fail")
+    @WithMockUser(username = "tzouliano", roles = "USER")
+    void testAddItemToCart_NegativeQuantityAndBookId() throws Exception{
+        AddItemRequest request = AddItemRequest.builder().bookId(-1L).quantity(-1).build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestInJson = objectMapper.writeValueAsString(request);
+
+        mockMvc.perform(post("/users/me/cart/items").contentType(MediaType.APPLICATION_JSON).content(requestInJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message.quantity").value("Quantity must be a non-negative number"))
+                .andExpect(jsonPath("$.message.bookId").value("Book id must be a positive number"));
+
+        verify(userService,never()).getUserIdByUsername("tzouliano");
+        verify(cartService,never()).addItemToCart(anyLong(),anyLong(),anyInt());
+    }
+
+    @Test
+    @DisplayName("PUT /users/me/cart/items/{bookId} - Update item's quantity - Success")
+    @WithMockUser(username = "tzouliano", roles = "USER")
+    void testUpdateItemQuantity_Success() throws Exception{
+        UpdateItemRequest request = UpdateItemRequest.builder().quantity(5).build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestInJson = objectMapper.writeValueAsString(request);
+
+        when(userService.getUserIdByUsername("tzouliano")).thenReturn(1L);
+        doNothing().when(cartService).updateItemQuantity(1L,100L,request.getQuantity());
+
+        mockMvc.perform(put("/users/me/cart/items/{bookId}",100L).contentType(MediaType.APPLICATION_JSON).content(requestInJson))
+                .andExpect(status().isOk());
+
+        verify(userService).getUserIdByUsername("tzouliano");
+        verify(cartService).updateItemQuantity(1L,100L,request.getQuantity());
+    }
+
+    @Test
+    @DisplayName("PUT /users/me/cart/items - Book is not found - Fail")
+    @WithMockUser(username = "tzouliano", roles = "USER")
+    void testUpdateItemQuantity_BookNotFound() throws Exception{
+        UpdateItemRequest request = UpdateItemRequest.builder().quantity(5).build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestInJson = objectMapper.writeValueAsString(request);
+
+        ResourceNotFoundException ex = new ResourceNotFoundException("Item not found");
+
+        when(userService.getUserIdByUsername("tzouliano")).thenReturn(1L);
+        doThrow(ex).when(cartService).updateItemQuantity(1L,100L,request.getQuantity());
+
+        mockMvc.perform(put("/users/me/cart/items/{bookId}",100L).contentType(MediaType.APPLICATION_JSON).content(requestInJson))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Item not found"));
+
+        verify(userService).getUserIdByUsername("tzouliano");
+        verify(cartService).updateItemQuantity(1L,100L,request.getQuantity());
+    }
+
+    @Test
+    @DisplayName("PUT /users/me/cart/items - Quantity is negative - Fail")
+    @WithMockUser(username = "tzouliano", roles = "USER")
+    void testUpdateItemQuantity_NegativeQuantity() throws Exception{
+        UpdateItemRequest request = UpdateItemRequest.builder().quantity(-1).build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestInJson = objectMapper.writeValueAsString(request);
+
+        mockMvc.perform(put("/users/me/cart/items/{bookId}",100L).contentType(MediaType.APPLICATION_JSON).content(requestInJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message.quantity").value("Quantity must be a non-negative number"));
+
+        verify(userService,never()).getUserIdByUsername("tzouliano");
+        verify(cartService,never()).updateItemQuantity(anyLong(),anyLong(),anyInt());
+    }
+
 
 }

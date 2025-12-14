@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
 public class AddItemRequest {
     @Positive(message = "Book id must be a positive number")
     private Long bookId;
-    @PositiveOrZero(message = "Quantity must be a non negative number")
+    @PositiveOrZero(message = "Quantity must be a non-negative number")
     private int quantity;
 }

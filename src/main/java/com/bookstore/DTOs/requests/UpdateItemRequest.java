@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateItemRequest {
-    @PositiveOrZero(message = "Quantity must be a non negative number")
+    @PositiveOrZero(message = "Quantity must be a non-negative number")
     private Integer quantity;
 }
