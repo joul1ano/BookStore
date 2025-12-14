@@ -51,6 +51,7 @@ public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    //todo write a test where i make sure that when a user is registered, his cart is created
 
     @Test
     @DisplayName("GET /users - Success (ADMIN)")

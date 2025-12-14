@@ -6,16 +6,20 @@ import com.bookstore.DTOs.requests.AddItemRequest;
 import com.bookstore.DTOs.requests.UpdateItemRequest;
 import com.bookstore.service.ShoppingCartService;
 import com.bookstore.service.UserService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/users/me/cart")
+@Validated
 public class ShoppingCartController {
     private final UserService userService;
     private final ShoppingCartService cartService;
@@ -47,7 +51,7 @@ public class ShoppingCartController {
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/items")
-    public ResponseEntity<Void> addBookToCart(@RequestBody AddItemRequest request){
+    public ResponseEntity<Void> addBookToCart(@Valid @RequestBody AddItemRequest request){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Long userId = userService.getUserIdByUsername(auth.getName());
 
@@ -57,7 +61,11 @@ public class ShoppingCartController {
 
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/items/{bookId}")
-    public ResponseEntity<Void> updateBookQuantity(@PathVariable Long bookId,@RequestBody UpdateItemRequest request){
+    public ResponseEntity<Void> updateBookQuantity(
+            @Positive(message = "Book id must be a positive number")
+            @PathVariable Long bookId,
+            @Valid @RequestBody
+            UpdateItemRequest request){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Long userId = userService.getUserIdByUsername(auth.getName());
 
@@ -67,7 +75,10 @@ public class ShoppingCartController {
 
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/items/{bookId}")
-    public ResponseEntity<Void> removeBookFromCart(@PathVariable Long bookId){
+    public ResponseEntity<Void> removeBookFromCart(
+            @Positive(message = "Book id must be a positive number")
+            @PathVariable
+            Long bookId){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Long userId = userService.getUserIdByUsername(auth.getName());
 
