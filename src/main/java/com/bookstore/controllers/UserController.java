@@ -1,7 +1,8 @@
 package com.bookstore.controllers;
 
 import com.bookstore.DTOs.*;
-import com.bookstore.DTOs.AddItemRequest;
+import com.bookstore.DTOs.requests.AddItemRequest;
+import com.bookstore.DTOs.requests.UpdateItemRequest;
 import com.bookstore.service.ShoppingCartService;
 import com.bookstore.service.UserFavouritesService;
 import com.bookstore.service.UserService;
@@ -55,35 +56,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserByUsername(username));
     }
 
-    @PreAuthorize("hasRole('USER')")
-    @GetMapping("me/favourites")
-    public ResponseEntity<List<BookDTO>> getFavouriteBooks(){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = userService.getUserIdByUsername(auth.getName());
 
-        return ResponseEntity.ok(favouritesService.getFavourites(userId));
-    }
-
-    @PreAuthorize("hasRole('USER')")
-    @PostMapping("me/favourites/{bookId}")
-    public ResponseEntity<Void> addBookToFavourites(@PathVariable Long bookId){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = userService.getUserIdByUsername(auth.getName());
-        favouritesService.addBookToFavourites(userId,bookId);
-
-        return ResponseEntity.noContent().build();
-    }
-
-    @PreAuthorize("hasRole('USER')")
-    @DeleteMapping("me/favourites/{bookId}")
-    public ResponseEntity<Void> removeFavouriteByBookId(@PathVariable Long bookId){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = userService.getUserIdByUsername(auth.getName());
-
-        favouritesService.removeFavouriteBook(userId,bookId);
-
-        return ResponseEntity.noContent().build();
-    }
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("me/cart")

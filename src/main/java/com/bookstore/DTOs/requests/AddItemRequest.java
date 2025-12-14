@@ -1,4 +1,4 @@
-package com.bookstore.DTOs;
+package com.bookstore.DTOs.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateItemRequest {
-    private Integer quantity;
+public class AddItemRequest {
+    private Long bookId;
+    private int quantity;
 }

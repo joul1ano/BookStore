@@ -1,5 +1,6 @@
-package com.bookstore.DTOs;
+package com.bookstore.DTOs.requests;
 
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddItemRequest {
+public class AddFavouriteRequest {
+    @Positive(message = "Book id must be a positive number")
     private Long bookId;
-    private int quantity;
 }
