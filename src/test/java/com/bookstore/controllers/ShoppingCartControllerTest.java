@@ -232,7 +232,7 @@ public class ShoppingCartControllerTest {
     }
 
     @Test
-    @DisplayName("PUT /users/me/cart/items - Quantity is negative - Fail")
+    @DisplayName("PUT /users/me/cart/items/{bookId} - Quantity is negative - Fail")
     @WithMockUser(username = "tzouliano", roles = "USER")
     void testUpdateItemQuantity_NegativeQuantity() throws Exception{
         UpdateItemRequest request = UpdateItemRequest.builder().quantity(-1).build();
@@ -245,6 +245,36 @@ public class ShoppingCartControllerTest {
 
         verify(userService,never()).getUserIdByUsername("tzouliano");
         verify(cartService,never()).updateItemQuantity(anyLong(),anyLong(),anyInt());
+    }
+
+    @Test
+    @DisplayName("DELETE /users/me/cart/items/{bookId} - Success")
+    @WithMockUser(username = "tzouliano", roles = "USER")
+    void testDeleteItem_Success() throws Exception{
+        when(userService.getUserIdByUsername("tzouliano")).thenReturn(1L);
+        doNothing().when(cartService).removeItemFromCart(1L,100L);
+
+        mockMvc.perform(delete("/users/me/cart/items/{bookId}",100L))
+                .andExpect(status().isNoContent());
+
+        verify(userService).getUserIdByUsername("tzouliano");
+        verify(cartService).removeItemFromCart(1L,100L);
+    }
+
+    @Test
+    @DisplayName("DELETE /users/me/cart/items/{bookId} - Fail")
+    @WithMockUser(username = "tzouliano", roles = "USER")
+    void testDeleteItem_BookNotFound() throws Exception{
+        when(userService.getUserIdByUsername("tzouliano")).thenReturn(1L);
+        ResourceNotFoundException ex = new ResourceNotFoundException("Item not found");
+        doThrow(ex).when(cartService).removeItemFromCart(1L,100L);
+
+        mockMvc.perform(delete("/users/me/cart/items/{bookId}",100L))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Item not found"));
+
+        verify(userService).getUserIdByUsername("tzouliano");
+        verify(cartService).removeItemFromCart(1L,100L);
     }
 
 
