@@ -34,6 +34,6 @@ public class ShoppingCart {
     @Column(name = "last_updated_at")
     private LocalDateTime lastUpdatedAt;
 
-    @OneToMany(mappedBy = "shoppingCart", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ShoppingCartItem> shoppingCartItems = new ArrayList<>();
 }

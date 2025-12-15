@@ -11,6 +11,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -58,7 +60,10 @@ public class OrderService {
         order.setOrderItems(orderItems);
         order.setTotalCost(totalCost);
 
-        return orderMapper.toDTO(orderRepository.save(order));
+        Order savedOrder = orderRepository.save(order);
+        emptyCart(cart);
+
+        return orderMapper.toDTO(savedOrder);
     }
 
     private List<OrderItem> createOrderItems(ShoppingCart cart, Order order){
@@ -75,5 +80,14 @@ public class OrderService {
                         .toList();
 
         return orderItems;
+    }
+
+    private void emptyCart(ShoppingCart cart){
+        cart.setItemCount(0);
+        cart.setTotalCost(0);
+        cart.setLastUpdatedAt(LocalDateTime.now());
+        cart.getShoppingCartItems().clear();
+
+        cartRepository.save(cart);
     }
 }
