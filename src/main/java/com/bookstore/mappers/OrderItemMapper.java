@@ -17,8 +17,8 @@ public interface OrderItemMapper {
 
     @Mapping(source = "order.id", target = "orderId")
     @Mapping(source = "book.id", target = "bookId")
-    AdminOrderItemDTO toAdminOrderItemDTO(Order order);
+    AdminOrderItemDTO toAdminOrderItemDTO(OrderItem orderItem);
 
     @Mapping(source = "book.id", target = "bookId")
-    UserOrderItemDTO toUserOrderItemDTO(Order order);
+    UserOrderItemDTO toUserOrderItemDTO(OrderItem orderItem);
 }

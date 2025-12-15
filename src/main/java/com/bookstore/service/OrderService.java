@@ -1,8 +1,10 @@
 package com.bookstore.service;
 
+import com.bookstore.DTOs.OrderDTO;
 import com.bookstore.DTOs.requests.PlaceOrderRequest;
 import com.bookstore.enums.OrderStatus;
 import com.bookstore.exceptions.ResourceNotFoundException;
+import com.bookstore.mappers.OrderMapper;
 import com.bookstore.model.*;
 import com.bookstore.repository.*;
 import jakarta.transaction.Transactional;
@@ -18,37 +20,45 @@ public class OrderService {
     private final UserRepository userRepository;
     private final ShoppingCartRepository cartRepository;
     private final ShoppingCartItemsRepository cartItemsRepository;
+    private final OrderMapper orderMapper;
 
     public OrderService(OrderRepository orderRepository,
                         OrderItemsRepository orderItemsRepository,
                         UserRepository userRepository,
                         ShoppingCartRepository cartRepository,
-                        ShoppingCartItemsRepository cartItemsRepository){
+                        ShoppingCartItemsRepository cartItemsRepository,
+                        OrderMapper orderMapper){
         this.orderRepository = orderRepository;
         this.orderItemsRepository = orderItemsRepository;
         this.userRepository = userRepository;
         this.cartRepository = cartRepository;
         this.cartItemsRepository = cartItemsRepository;
+        this.orderMapper = orderMapper;
     }
 
     @Transactional
-    public void createNewOrder(PlaceOrderRequest request){
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User with id: " + request.getUserId() + " not found"));
-        ShoppingCart cart = cartRepository.findByUserId(request.getUserId());
+    public OrderDTO createNewOrder(PlaceOrderRequest request, String username){
+        User user = userRepository.findByUsername(username)
+                .orElseThrow();
+        ShoppingCart cart = cartRepository.findByUserId(user.getId());
 
         Order order = Order.builder()
                 .id(null)
                 .user(user)
                 .datePlaced(LocalDateTime.now())
                 .shippingAddress(request.getShippingAddress())
-                .totalCost(0) //TODO
                 .paymentMethod(request.getPaymentMethod())
                 .userNotes(request.getUserNotes())
                 .status(OrderStatus.PENDING)
                 .statusLastUpdated(LocalDateTime.now())
-                .orderItems(List.of()) //TODO
                 .build();
+        List<OrderItem> orderItems = createOrderItems(cart,order);
+        double totalCost = orderItems.stream().mapToDouble(OrderItem::getTotalCost).sum();
+
+        order.setOrderItems(orderItems);
+        order.setTotalCost(totalCost);
+
+        return orderMapper.toDTO(orderRepository.save(order));
     }
 
     private List<OrderItem> createOrderItems(ShoppingCart cart, Order order){
@@ -63,8 +73,6 @@ public class OrderService {
                                 .build()
                         )
                         .toList();
-
-        orderItemsRepository.saveAll(orderItems);
 
         return orderItems;
     }

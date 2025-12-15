@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class PlaceOrderRequest {
-    private Long userId;
     private String shippingAddress;
     private PaymentMethod paymentMethod;
     private String userNotes;
