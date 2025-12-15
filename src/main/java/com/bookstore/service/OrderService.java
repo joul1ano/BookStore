@@ -1,9 +1,11 @@
 package com.bookstore.service;
 
 import com.bookstore.DTOs.OrderDTO;
+import com.bookstore.DTOs.OrderDetailsDTO;
 import com.bookstore.DTOs.requests.PlaceOrderRequest;
 import com.bookstore.enums.OrderStatus;
 import com.bookstore.exceptions.ResourceNotFoundException;
+import com.bookstore.mappers.OrderItemMapper;
 import com.bookstore.mappers.OrderMapper;
 import com.bookstore.model.*;
 import com.bookstore.repository.*;
@@ -23,19 +25,22 @@ public class OrderService {
     private final ShoppingCartRepository cartRepository;
     private final ShoppingCartItemsRepository cartItemsRepository;
     private final OrderMapper orderMapper;
+    private final OrderItemMapper orderItemMapper;
 
     public OrderService(OrderRepository orderRepository,
                         OrderItemsRepository orderItemsRepository,
                         UserRepository userRepository,
                         ShoppingCartRepository cartRepository,
                         ShoppingCartItemsRepository cartItemsRepository,
-                        OrderMapper orderMapper){
+                        OrderMapper orderMapper,
+                        OrderItemMapper orderItemMapper){
         this.orderRepository = orderRepository;
         this.orderItemsRepository = orderItemsRepository;
         this.userRepository = userRepository;
         this.cartRepository = cartRepository;
         this.cartItemsRepository = cartItemsRepository;
         this.orderMapper = orderMapper;
+        this.orderItemMapper = orderItemMapper;
     }
 
     @Transactional
@@ -64,6 +69,31 @@ public class OrderService {
         emptyCart(cart);
 
         return orderMapper.toDTO(savedOrder);
+    }
+
+    public List<OrderDTO> getOrdersForCurrentUser(String username){
+        User user = userRepository.findByUsername(username).orElseThrow();
+
+        return orderRepository.findAllByUser_Id(user.getId()).stream().map(orderMapper::toDTO).toList();
+    }
+
+    public OrderDetailsDTO getOrderDetailsForCurrentUser(String username, Long orderId){
+        User user = userRepository.findByUsername(username).orElseThrow();
+        Order order = orderRepository.findById(orderId).orElseThrow(() ->new ResourceNotFoundException("Order not found"));
+        List<OrderItem> orderItems = orderItemsRepository.findAllByOrder_Id(orderId);
+
+        return OrderDetailsDTO.builder()
+                .orderId(order.getId())
+                .userId(user.getId())
+                .datePlaced(order.getDatePlaced())
+                .shippingAddress(order.getShippingAddress())
+                .totalCost(order.getTotalCost())
+                .paymentMethod(order.getPaymentMethod())
+                .userNotes(order.getUserNotes())
+                .status(order.getStatus())
+                .statusLastUpdated(order.getStatusLastUpdated())
+                .items(orderItems.stream().map(orderItemMapper::toUserOrderItemDTO).toList())
+                .build();
     }
 
     private List<OrderItem> createOrderItems(ShoppingCart cart, Order order){
