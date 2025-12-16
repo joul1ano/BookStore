@@ -1,6 +1,7 @@
 package com.bookstore.controllers;
 
 import com.bookstore.DTOs.ShoppingCartDTO;
+import com.bookstore.DTOs.ShoppingCartDetailsDTO;
 import com.bookstore.DTOs.ShoppingCartItemDTO;
 import com.bookstore.DTOs.requests.AddItemRequest;
 import com.bookstore.DTOs.requests.UpdateItemRequest;
@@ -40,11 +41,11 @@ public class ShoppingCartController {
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/items")
-    public ResponseEntity<List<ShoppingCartItemDTO>> getCartItems(){
+    public ResponseEntity<ShoppingCartDetailsDTO> getCartItems(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Long userId = userService.getUserIdByUsername(auth.getName());
 
-        return ResponseEntity.ok(cartService.getCartItems(userId));
+        return ResponseEntity.ok(cartService.getCartDetails(userId));
 //        cartService.cleanUp(1L);
 //        return ResponseEntity.noContent().build();
     }

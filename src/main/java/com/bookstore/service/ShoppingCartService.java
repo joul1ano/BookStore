@@ -1,6 +1,7 @@
 package com.bookstore.service;
 
 import com.bookstore.DTOs.ShoppingCartDTO;
+import com.bookstore.DTOs.ShoppingCartDetailsDTO;
 import com.bookstore.DTOs.ShoppingCartItemDTO;
 import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.CartItemMapper;
@@ -41,10 +42,17 @@ public class ShoppingCartService {
         return cartMapper.toDTO(cartRepository.findByUserId(userId));
     }
 
-    public List<ShoppingCartItemDTO> getCartItems(Long userId){
-        Long cartId = cartRepository.findByUserId(userId).getId();
+    public ShoppingCartDetailsDTO getCartDetails(Long userId){
+        ShoppingCart cart = cartRepository.findByUserId(userId);
+        ShoppingCartDetailsDTO cartDetailsDTO = ShoppingCartDetailsDTO.builder()
+                .userId(userId)
+                .itemCount(cart.getItemCount())
+                .totalCost(cart.getTotalCost())
+                .lastUpdatedAt(cart.getLastUpdatedAt())
+                .items(itemsRepository.findAllByShoppingCart_Id(cart.getId()).stream().map(cartItemMapper::toDTO).toList())
+                .build();
 
-        return itemsRepository.findAllByShoppingCart_Id(cartId).stream().map(cartItemMapper::toDTO).toList();
+        return cartDetailsDTO;
     }
 
     public void cleanUp(Long id){

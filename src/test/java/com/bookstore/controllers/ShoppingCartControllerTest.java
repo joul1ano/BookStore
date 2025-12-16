@@ -8,15 +8,11 @@ import com.bookstore.DTOs.requests.UpdateItemRequest;
 import com.bookstore.config.JwtAuthenticationFilter;
 import com.bookstore.config.SecurityConfig;
 import com.bookstore.exceptions.ResourceNotFoundException;
-import com.bookstore.model.ShoppingCart;
-import com.bookstore.model.User;
 import com.bookstore.service.ShoppingCartService;
 import com.bookstore.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.With;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -26,7 +22,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -35,9 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
 
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(controllers = ShoppingCartController.class,
@@ -87,7 +80,7 @@ public class ShoppingCartControllerTest {
                 .book(book2).quantity(1).build();
 
         when(userService.getUserIdByUsername("tzouliano")).thenReturn(1L);
-        when(cartService.getCartItems(1L)).thenReturn(List.of(item1,item2));
+        when(cartService.getCartDetails(1L)).thenReturn(List.of(item1,item2));
 
         mockMvc.perform(get("/users/me/cart/items"))
                 .andExpect(status().isOk())
@@ -101,7 +94,7 @@ public class ShoppingCartControllerTest {
                 .andExpect(jsonPath("$[1].quantity").value(1));
 
         verify(userService).getUserIdByUsername("tzouliano");
-        verify(cartService).getCartItems(1L);
+        verify(cartService).getCartDetails(1L);
     }
 
     @Test
@@ -109,14 +102,14 @@ public class ShoppingCartControllerTest {
     @WithMockUser(username = "tzouliano", roles = "USER")
     void testGetCartItems_NoItemsFound() throws Exception{
         when(userService.getUserIdByUsername("tzouliano")).thenReturn(1L);
-        when(cartService.getCartItems(1L)).thenReturn(List.of());
+        when(cartService.getCartDetails(1L)).thenReturn(List.of());
 
         mockMvc.perform(get("/users/me/cart/items"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(0));
 
         verify(userService).getUserIdByUsername("tzouliano");
-        verify(cartService).getCartItems(1L);
+        verify(cartService).getCartDetails(1L);
     }
 
     @Test

@@ -12,10 +12,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ShoppingCartDTO {
+public class ShoppingCartDetailsDTO {
     private Long userId;
     private Integer itemCount;
     private Double totalCost;
     private LocalDateTime lastUpdatedAt;
-
+    private List<ShoppingCartItemDTO> items;
 }

@@ -72,7 +72,7 @@ public class ShoppingCartServiceTest {
 
     @Test
     @DisplayName("Get cart items - Success")
-    void testGetCartItems_Success(){
+    void testGetCartDetails_Success(){
         ShoppingCartItem item1 = ShoppingCartItem.builder()
                 .id(20L)
                 .shoppingCart(ShoppingCart.builder().id(5L).build())
@@ -99,7 +99,7 @@ public class ShoppingCartServiceTest {
         when(itemMapper.toDTO(item1)).thenReturn(item1DTO);
         when(itemMapper.toDTO(item2)).thenReturn(item2DTO);
 
-        List<ShoppingCartItemDTO> actual = cartService.getCartItems(1L);
+        List<ShoppingCartItemDTO> actual = cartService.getCartDetails(1L);
 
         Assertions.assertNotNull(actual);
         Assertions.assertEquals(actual,List.of(item1DTO,item2DTO));
@@ -108,12 +108,12 @@ public class ShoppingCartServiceTest {
 
     @Test
     @DisplayName("Get cart items - Not items found")
-    void testGetCartItems_NoItemsFound(){
+    void testGetCartItems_NoDetailsFound(){
         when(cartRepository.findByUserId(1L))
                 .thenReturn(ShoppingCart.builder().id(5L).user(User.builder().id(1L).build()).build());
         when(itemsRepository.findAllByShoppingCart_Id(5L)).thenReturn(List.of());
 
-        List<ShoppingCartItemDTO> actual = cartService.getCartItems(1L);
+        List<ShoppingCartItemDTO> actual = cartService.getCartDetails(1L);
 
         Assertions.assertTrue(actual.isEmpty());
         verify(cartRepository).findByUserId(1L);
