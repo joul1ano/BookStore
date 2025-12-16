@@ -24,7 +24,7 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/auth/**") //ENDPOINTS THAT DONT REQUIRE AUTH
+                .requestMatchers("/auth/**") //ENDPOINTS THAT DONT REQUIRE AUTH
                 .permitAll()
                 .anyRequest()
                 .authenticated()
