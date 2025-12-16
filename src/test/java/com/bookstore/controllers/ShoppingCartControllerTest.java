@@ -2,6 +2,7 @@ package com.bookstore.controllers;
 
 import com.bookstore.DTOs.BookDTO;
 import com.bookstore.DTOs.ShoppingCartDTO;
+import com.bookstore.DTOs.ShoppingCartDetailsDTO;
 import com.bookstore.DTOs.ShoppingCartItemDTO;
 import com.bookstore.DTOs.requests.AddItemRequest;
 import com.bookstore.DTOs.requests.UpdateItemRequest;
@@ -78,20 +79,28 @@ public class ShoppingCartControllerTest {
                 .book(book1).quantity(1).build();
         ShoppingCartItemDTO item2 = ShoppingCartItemDTO.builder()
                 .book(book2).quantity(1).build();
+        ShoppingCartDetailsDTO cartDetailsDTO = ShoppingCartDetailsDTO
+                .builder()
+                .userId(1L)
+                .itemCount(2)
+                .items(List.of(item1,item2))
+                .build();
 
         when(userService.getUserIdByUsername("tzouliano")).thenReturn(1L);
-        when(cartService.getCartDetails(1L)).thenReturn(List.of(item1,item2));
+        when(cartService.getCartDetails(1L)).thenReturn(cartDetailsDTO);
 
         mockMvc.perform(get("/users/me/cart/items"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.size()").value(2))
 
-                .andExpect(jsonPath("$[0].book.id").value(100L))
-                .andExpect(jsonPath("$[0].quantity").value(1))
+                .andExpect(jsonPath("$.userId").value(1L))
+                .andExpect(jsonPath("$.itemCount").value(2))
 
-                .andExpect(jsonPath("$[1].book.id").value(101L))
-                .andExpect(jsonPath("$[1].quantity").value(1));
+                .andExpect(jsonPath("$.items[0].book.id").value(100L))
+                .andExpect(jsonPath("$.items[0].quantity").value(1))
+
+                .andExpect(jsonPath("$.items[1].book.id").value(101L))
+                .andExpect(jsonPath("$.items[1].quantity").value(1));
 
         verify(userService).getUserIdByUsername("tzouliano");
         verify(cartService).getCartDetails(1L);
@@ -101,12 +110,22 @@ public class ShoppingCartControllerTest {
     @DisplayName("GET /users/me/cart/items - Cart is empty, returns empty list")
     @WithMockUser(username = "tzouliano", roles = "USER")
     void testGetCartItems_NoItemsFound() throws Exception{
+        ShoppingCartDetailsDTO cartDetailsDTO = ShoppingCartDetailsDTO
+                .builder()
+                .userId(1L)
+                .itemCount(0)
+                .totalCost(0.0)
+                .items(List.of())
+                .build();
         when(userService.getUserIdByUsername("tzouliano")).thenReturn(1L);
-        when(cartService.getCartDetails(1L)).thenReturn(List.of());
+        when(cartService.getCartDetails(1L)).thenReturn(cartDetailsDTO);
 
         mockMvc.perform(get("/users/me/cart/items"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(0));
+                .andExpect(jsonPath("$.userId").value(1L))
+                .andExpect(jsonPath("$.itemCount").value(0))
+                .andExpect(jsonPath("$.totalCost").value(0.0))
+                .andExpect(jsonPath("$.items.size()").value(0));
 
         verify(userService).getUserIdByUsername("tzouliano");
         verify(cartService).getCartDetails(1L);

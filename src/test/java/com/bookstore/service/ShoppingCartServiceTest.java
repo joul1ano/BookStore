@@ -2,6 +2,7 @@ package com.bookstore.service;
 
 import com.bookstore.DTOs.BookDTO;
 import com.bookstore.DTOs.ShoppingCartDTO;
+import com.bookstore.DTOs.ShoppingCartDetailsDTO;
 import com.bookstore.DTOs.ShoppingCartItemDTO;
 import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.CartItemMapper;
@@ -99,10 +100,10 @@ public class ShoppingCartServiceTest {
         when(itemMapper.toDTO(item1)).thenReturn(item1DTO);
         when(itemMapper.toDTO(item2)).thenReturn(item2DTO);
 
-        List<ShoppingCartItemDTO> actual = cartService.getCartDetails(1L);
+        ShoppingCartDetailsDTO actual = cartService.getCartDetails(1L);
 
         Assertions.assertNotNull(actual);
-        Assertions.assertEquals(actual,List.of(item1DTO,item2DTO));
+        Assertions.assertEquals(actual.getItems(),List.of(item1DTO,item2DTO));
 
     }
 
@@ -113,9 +114,9 @@ public class ShoppingCartServiceTest {
                 .thenReturn(ShoppingCart.builder().id(5L).user(User.builder().id(1L).build()).build());
         when(itemsRepository.findAllByShoppingCart_Id(5L)).thenReturn(List.of());
 
-        List<ShoppingCartItemDTO> actual = cartService.getCartDetails(1L);
+        ShoppingCartDetailsDTO actual = cartService.getCartDetails(1L);
 
-        Assertions.assertTrue(actual.isEmpty());
+        Assertions.assertTrue(actual.getItems().isEmpty());
         verify(cartRepository).findByUserId(1L);
         verify(itemsRepository).findAllByShoppingCart_Id(5L);
         verify(itemMapper,never()).toDTO(any());
