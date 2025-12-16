@@ -24,5 +24,5 @@ public class OrderDetailsDTO {
     private String userNotes;
     private OrderStatus status;
     private LocalDateTime statusLastUpdated;
-    private List<UserOrderItemDTO> items;
+    private List<OrderItemDTO> items;
 }

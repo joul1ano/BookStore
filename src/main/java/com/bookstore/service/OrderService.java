@@ -13,8 +13,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -26,6 +24,7 @@ public class OrderService {
     private final ShoppingCartItemsRepository cartItemsRepository;
     private final OrderMapper orderMapper;
     private final OrderItemMapper orderItemMapper;
+
 
     public OrderService(OrderRepository orderRepository,
                         OrderItemsRepository orderItemsRepository,
@@ -42,6 +41,9 @@ public class OrderService {
         this.orderMapper = orderMapper;
         this.orderItemMapper = orderItemMapper;
     }
+    /*
+    --------------User------------------
+     */
 
     @Transactional
     public OrderDTO createNewOrder(PlaceOrderRequest request, String username){
@@ -65,7 +67,13 @@ public class OrderService {
         order.setOrderItems(orderItems);
         order.setTotalCost(totalCost);
 
+        //Updating user's total amount spent
+        order.getUser().setTotalAmountSpent(order.getUser().getTotalAmountSpent() + order.getTotalCost());
+        //Updating book availabilities
+        updateBookAvailability(order);
+
         Order savedOrder = orderRepository.save(order);
+
         emptyCart(cart);
 
         return orderMapper.toDTO(savedOrder);
@@ -92,8 +100,34 @@ public class OrderService {
                 .userNotes(order.getUserNotes())
                 .status(order.getStatus())
                 .statusLastUpdated(order.getStatusLastUpdated())
-                .items(orderItems.stream().map(orderItemMapper::toUserOrderItemDTO).toList())
+                .items(orderItems.stream().map(orderItemMapper::toOrderItemDTO).toList())
                 .build();
+    }
+
+    /*
+    --------------Admin------------------
+     */
+    public List<OrderDTO> getAllOrders(){
+        return orderRepository.findAll().stream().map(orderMapper::toDTO).toList();
+    }
+
+    public OrderDetailsDTO getOrderById(Long orderId){
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        OrderDetailsDTO orderDetailsDTO = OrderDetailsDTO.builder()
+                .orderId(orderId)
+                .userId(order.getUser().getId())
+                .datePlaced(order.getDatePlaced())
+                .shippingAddress(order.getShippingAddress())
+                .totalCost(order.getTotalCost())
+                .paymentMethod(order.getPaymentMethod())
+                .userNotes(order.getUserNotes())
+                .status(order.getStatus())
+                .statusLastUpdated(order.getStatusLastUpdated())
+                .items(order.getOrderItems().stream().map(orderItemMapper::toOrderItemDTO).toList())
+                .build();
+
+        return orderDetailsDTO;
     }
 
     private List<OrderItem> createOrderItems(ShoppingCart cart, Order order){
@@ -120,4 +154,15 @@ public class OrderService {
 
         cartRepository.save(cart);
     }
+
+    private void updateBookAvailability(Order order) {
+        for (OrderItem item : order.getOrderItems()) {
+            Book book = item.getBook();
+
+            int newAvailability = book.getAvailability() - item.getQuantity();
+
+            book.setAvailability(Math.max(newAvailability, 0));
+        }
+    }
+
 }

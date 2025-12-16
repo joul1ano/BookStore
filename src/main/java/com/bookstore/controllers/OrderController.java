@@ -1,6 +1,5 @@
 package com.bookstore.controllers;
 
-import com.bookstore.DTOs.AdminOrderItemDTO;
 import com.bookstore.DTOs.OrderDTO;
 import com.bookstore.DTOs.OrderDetailsDTO;
 import com.bookstore.DTOs.requests.PlaceOrderRequest;
@@ -22,6 +21,10 @@ public class OrderController {
         this.orderService= orderService;
     }
 
+    /*
+    -------------------User------------------
+     */
+
     @GetMapping("/users/me/orders")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<OrderDTO>> getMyOrders(){
@@ -38,7 +41,6 @@ public class OrderController {
         String username = auth.getName();
 
         return ResponseEntity.ok(orderService.getOrderDetailsForCurrentUser(username,id));
-
     }
 
     @PostMapping("/users/me/orders")
@@ -48,5 +50,21 @@ public class OrderController {
         String username = auth.getName();
 
         return ResponseEntity.ok(orderService.createNewOrder(request,username));
+    }
+
+    /*
+    -------------------Admin------------------
+     */
+
+    @GetMapping("/orders")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<OrderDTO>> getAllOrders(){
+        return ResponseEntity.ok(orderService.getAllOrders());
+    }
+
+    @GetMapping("/orders/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<OrderDetailsDTO> getOrderById(@PathVariable Long id){
+        return ResponseEntity.ok(orderService.getOrderById(id));
     }
 }

@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-//For admin to see
-public class AdminOrderItemDTO {
-    private Long id;
-    private Long orderId;
+//For user to see
+public class OrderItemDTO {
     private Long bookId;
     private int quantity;
     private double totalCost;
