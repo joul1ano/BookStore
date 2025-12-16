@@ -3,6 +3,7 @@ package com.bookstore.controllers;
 import com.bookstore.DTOs.OrderDTO;
 import com.bookstore.DTOs.OrderDetailsDTO;
 import com.bookstore.DTOs.requests.PlaceOrderRequest;
+import com.bookstore.DTOs.requests.UpdateOrderStatusRequest;
 import com.bookstore.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -66,5 +67,13 @@ public class OrderController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<OrderDetailsDTO> getOrderById(@PathVariable Long id){
         return ResponseEntity.ok(orderService.getOrderById(id));
+    }
+
+    @PutMapping("/orders/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<OrderDTO> updateOrderStatus(
+            @PathVariable Long id,
+            @RequestBody UpdateOrderStatusRequest request){
+        return ResponseEntity.ok(orderService.updateOrderStatusByOrderId(id,request));
     }
 }

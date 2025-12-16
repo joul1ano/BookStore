@@ -3,6 +3,7 @@ package com.bookstore.service;
 import com.bookstore.DTOs.OrderDTO;
 import com.bookstore.DTOs.OrderDetailsDTO;
 import com.bookstore.DTOs.requests.PlaceOrderRequest;
+import com.bookstore.DTOs.requests.UpdateOrderStatusRequest;
 import com.bookstore.enums.OrderStatus;
 import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.OrderItemMapper;
@@ -128,6 +129,15 @@ public class OrderService {
                 .build();
 
         return orderDetailsDTO;
+    }
+
+    public OrderDTO updateOrderStatusByOrderId(Long orderId, UpdateOrderStatusRequest request){
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        order.setStatus(request.getStatus());
+        order.setStatusLastUpdated(LocalDateTime.now());
+
+        return orderMapper.toDTO(orderRepository.save(order));
     }
 
     private List<OrderItem> createOrderItems(ShoppingCart cart, Order order){
