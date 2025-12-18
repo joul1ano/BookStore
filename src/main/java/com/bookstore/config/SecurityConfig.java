@@ -24,7 +24,10 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/auth/**") //ENDPOINTS THAT DONT REQUIRE AUTH
+                .requestMatchers("/auth/**",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/swagger-ui.html") //ENDPOINTS THAT DONT REQUIRE AUTH
                 .permitAll()
                 .anyRequest()
                 .authenticated()

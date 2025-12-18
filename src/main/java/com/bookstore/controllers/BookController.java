@@ -3,6 +3,10 @@ package com.bookstore.controllers;
 import com.bookstore.DTOs.BookDTO;
 import com.bookstore.model.Book;
 import com.bookstore.service.BookService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
@@ -17,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/books")
 @Validated
+@Tag(name = "Books", description = "Operations related to books")
 public class BookController {
     private BookService bookService;
 
@@ -25,25 +30,32 @@ public class BookController {
     }
 
     @GetMapping
+    @Operation(
+            summary = "Get all books",
+            description = "Returns a list of all books available. Access = [ADMIN,USER]"
+    )
+
     public List<BookDTO> getAllBooks(){
         return bookService.getAllBooks();
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get book by id",description = "Access = [ADMIN,USER]")
     public ResponseEntity<BookDTO> getBookById(@Positive(message = "Id must be a positive number") @PathVariable Long id){
         return ResponseEntity.ok(bookService.getBookById(id));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
+    @Operation(summary = "Create new book", description = " Access = [ADMIN]")
     public ResponseEntity<BookDTO> createBook(@Valid @RequestBody BookDTO bookDTO){
-        //BookDTO createdBookDTO = bookService.createBook(bookDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(bookService.createBook(bookDTO));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
+    @Operation(summary = "Update a book by id", description = " Access = [ADMIN]")
     public ResponseEntity<BookDTO> updateBook(
             @Positive(message = "Id must be a positive number")
             @PathVariable
@@ -56,6 +68,7 @@ public class BookController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a book by id", description = " Access = [ADMIN]")
     public ResponseEntity<String> deleteBook(@Positive(message = "Id must be a positive number")@PathVariable Long id){
         bookService.deleteBookById(id);
         return ResponseEntity.noContent().build();

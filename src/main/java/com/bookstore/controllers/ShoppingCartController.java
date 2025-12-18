@@ -7,6 +7,8 @@ import com.bookstore.DTOs.requests.AddItemRequest;
 import com.bookstore.DTOs.requests.UpdateItemRequest;
 import com.bookstore.service.ShoppingCartService;
 import com.bookstore.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/users/me/cart")
 @Validated
+@Tag(name = "Cart", description = "Operations related to cart")
 public class ShoppingCartController {
     private final UserService userService;
     private final ShoppingCartService cartService;
@@ -32,6 +35,10 @@ public class ShoppingCartController {
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping
+    @Operation(
+            summary = "Get my cart",
+            description = "Returns a summary of the cart for the authenticated user. Access = [USER]"
+    )
     public ResponseEntity<ShoppingCartDTO> getCart(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Long userId = userService.getUserIdByUsername(auth.getName());
@@ -41,17 +48,23 @@ public class ShoppingCartController {
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/items")
+    @Operation(
+            summary = "Get cart items",
+            description = "Returns full cart details for the authenticated user. Access = [USER]"
+    )
     public ResponseEntity<ShoppingCartDetailsDTO> getCartItems(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Long userId = userService.getUserIdByUsername(auth.getName());
 
         return ResponseEntity.ok(cartService.getCartDetails(userId));
-//        cartService.cleanUp(1L);
-//        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/items")
+    @Operation(
+            summary = "Add book to cart",
+            description = "Adds a book to the authenticated user's cart. Access = [USER]"
+    )
     public ResponseEntity<Void> addBookToCart(@Valid @RequestBody AddItemRequest request){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Long userId = userService.getUserIdByUsername(auth.getName());
@@ -62,6 +75,7 @@ public class ShoppingCartController {
 
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/items/{bookId}")
+    @Operation(summary = "Update a book's quantity", description = "Access = [USER]")
     public ResponseEntity<Void> updateBookQuantity(
             @Positive(message = "Book id must be a positive number")
             @PathVariable Long bookId,
@@ -76,6 +90,10 @@ public class ShoppingCartController {
 
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/items/{bookId}")
+    @Operation(
+            summary = "Remove book from cart",
+            description = "Completely removes a book from the authenticated user's cart. Access = [USER]"
+    )
     public ResponseEntity<Void> removeBookFromCart(
             @Positive(message = "Book id must be a positive number")
             @PathVariable

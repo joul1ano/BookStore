@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -108,7 +109,11 @@ public class OrderService {
     /*
     --------------Admin------------------
      */
-    public List<OrderDTO> getAllOrders(){
+    public List<OrderDTO> getAllOrders(Optional<String> username){
+        if (username.isPresent()){
+            return orderRepository.findByUser_Username(username.get())
+                    .stream().map(orderMapper::toDTO).toList();
+        }
         return orderRepository.findAll().stream().map(orderMapper::toDTO).toList();
     }
 
