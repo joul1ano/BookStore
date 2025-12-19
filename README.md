@@ -13,7 +13,7 @@ BookStore is an online bookstore backend application built with Java Spring Boot
 2) Framework: Spring Boot
 3) Build Tool: Maven
 4) Database: PostgreSQL
-5) Authentication: JWT / Spring Security (if implemented)
+5) Authentication: JWT / Spring Security
 6) Version Control: Git / GitHub
 
 ## Installation:
