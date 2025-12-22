@@ -19,6 +19,7 @@ public class RegisterRequest {
     @NotBlank(message = "Password cannot be blank")
     private String password;
     @Email(message = "Wrong email format")
+    @NotBlank(message = "Email cannot be blank")
     private String email;
     private String phone;
 }

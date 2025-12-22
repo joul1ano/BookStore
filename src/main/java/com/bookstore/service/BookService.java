@@ -8,6 +8,7 @@ import com.bookstore.repository.BookRepository;
 import com.bookstore.repository.PublisherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,9 +29,14 @@ public class BookService {
         this.publisherRepository = publisherRepository;
     }
 
-    public List<BookDTO> getAllBooks()
+    public List<BookDTO> getAllBooks(Authentication auth)
     {
-        return bookRepository.findAll().stream().map(bookMapper::toDTO).toList();
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if(isAdmin){
+            return bookRepository.findAll().stream().map(bookMapper::toDTO).toList();
+        }
+        return bookRepository.findByAvailabilityGreaterThan(0).stream().map(bookMapper::toDTO).toList();
     }
 
     public BookDTO getBookById(Long id) {
