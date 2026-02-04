@@ -9,10 +9,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 @Table(name = "publishers")
 @Entity
-@ToString(exclude = "books")
+//@ToString(exclude = "books")
 public class Publisher {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

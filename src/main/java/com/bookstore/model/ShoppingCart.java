@@ -11,10 +11,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 @Table(name = "shopping_carts")
 @Entity
-@ToString(exclude = {"user", "shoppingCartItems"})
+//@ToString(exclude = {"user", "shoppingCartItems"})
 public class ShoppingCart {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

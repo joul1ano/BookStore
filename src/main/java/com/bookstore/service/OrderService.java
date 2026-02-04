@@ -26,6 +26,7 @@ public class OrderService {
     private final ShoppingCartItemsRepository cartItemsRepository;
     private final OrderMapper orderMapper;
     private final OrderItemMapper orderItemMapper;
+    private final ShoppingCartService cartService;
 
 
     public OrderService(OrderRepository orderRepository,
@@ -34,7 +35,8 @@ public class OrderService {
                         ShoppingCartRepository cartRepository,
                         ShoppingCartItemsRepository cartItemsRepository,
                         OrderMapper orderMapper,
-                        OrderItemMapper orderItemMapper){
+                        OrderItemMapper orderItemMapper,
+                        ShoppingCartService cartService){
         this.orderRepository = orderRepository;
         this.orderItemsRepository = orderItemsRepository;
         this.userRepository = userRepository;
@@ -42,6 +44,7 @@ public class OrderService {
         this.cartItemsRepository = cartItemsRepository;
         this.orderMapper = orderMapper;
         this.orderItemMapper = orderItemMapper;
+        this.cartService = cartService;
     }
     /*
     --------------User------------------
@@ -77,6 +80,7 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
 
         emptyCart(cart);
+        updateOtherCarts(orderItems);
 
         return orderMapper.toDTO(savedOrder);
     }
@@ -178,6 +182,27 @@ public class OrderService {
 
             book.setAvailability(Math.max(newAvailability, 0));
         }
+    }
+
+    /*
+    When a user places an order, the order items availabilities are updated. So after many orders, if a book's availability
+    is for example set to 5 , and some user has that book in his shopping cart with a quantity of 6, the book quantity in his
+    cart and all the other carts that contain that book (and that the quantity is exceeding the availability), should be
+    reduced to equal availability. In this case, the book's quantity in this shopping cart will be set to 5.
+     */
+    private void updateOtherCarts(List<OrderItem> orderItems){
+        for(OrderItem item : orderItems){
+            // Find all cart items (across all users) for this book where the requested quantity exceeds the available stock
+            List<ShoppingCartItem> cartItemsThatContainBook = cartItemsRepository
+                    .findAllByBook_IdAndQuantityGreaterThan(item.getBook().getId(),item.getBook().getAvailability());
+
+            for(ShoppingCartItem cartItem : cartItemsThatContainBook){
+                User user = userRepository.findByShoppingCart_Id(cartItem.getShoppingCart().getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                cartService.updateItemQuantity(user.getId(), cartItem.getBook().getId(),cartItem.getBook().getAvailability());
+            }
+        }
+
     }
 
 }

@@ -14,10 +14,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 @Table(name = "orders")
 @Entity
-@ToString(exclude = {"user", "orderItems"})
+//@ToString(exclude = {"user", "orderItems"})
 public class Order {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

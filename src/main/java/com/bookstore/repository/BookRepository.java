@@ -13,4 +13,5 @@ public interface BookRepository extends JpaRepository<Book,Long> {
     List<Book> findAll();
     Optional<Book> findById(Long id);
     List<Book> findByAvailabilityGreaterThan(int availability);
+    boolean existsByTitleAndAuthor(String title, String author);
 }

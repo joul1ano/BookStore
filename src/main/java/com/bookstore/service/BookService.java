@@ -1,6 +1,7 @@
 package com.bookstore.service;
 
 import com.bookstore.DTOs.BookDTO;
+import com.bookstore.exceptions.ResourceAlreadyExistsException;
 import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.BookMapper;
 import com.bookstore.model.Book;
@@ -46,8 +47,16 @@ public class BookService {
 
 
     public BookDTO createBook(BookDTO bookDTO){
+        /*
+        Checking if publisher provided exists and then if the book already exists
+         */
         if (publisherRepository.findById(bookDTO.getPublisherId()).isEmpty())
             throw new ResourceNotFoundException("Publisher with id: " + bookDTO.getPublisherId() + " does not exist");
+
+        if(bookRepository.existsByTitleAndAuthor(bookDTO.getTitle(),bookDTO.getAuthor()))
+            throw new ResourceAlreadyExistsException("Book with title: " + bookDTO.getTitle()
+            + " and author: " + bookDTO.getAuthor() + " already exists.");
+
         return bookMapper.toDTO(bookRepository.save(bookMapper.toEntity(bookDTO)));
 
     }

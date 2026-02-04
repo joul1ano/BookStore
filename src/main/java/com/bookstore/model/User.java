@@ -16,10 +16,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 @Table(name = "users")
 @Entity
-@ToString(exclude = {"shoppingCart","favourites"})
+//@ToString(exclude = {"shoppingCart","favourites"})
 /*
     otan kanw user.get(ShoppingCart), prospathei na kanei kathe pedio tou shoppingCart se .toString() ,
     omws to shopping cart exei ena pedio user , opote paei na kanei shoppingCart.get(user).toString()

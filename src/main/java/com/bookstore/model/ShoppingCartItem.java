@@ -6,10 +6,11 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 @Table(name = "shopping_cart_items")
 @Entity
-@ToString(exclude = "shoppingCart")
+//@ToString(exclude = "shoppingCart")
 public class ShoppingCartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

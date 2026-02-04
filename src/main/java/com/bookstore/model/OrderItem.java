@@ -6,10 +6,11 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 @Table(name = "order_items")
 @Entity
-@ToString(exclude = "order")
+//@ToString(exclude = "order")
 public class OrderItem {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

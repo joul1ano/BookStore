@@ -1,10 +1,7 @@
 package com.bookstore.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.engine.internal.Cascade;
 import org.mapstruct.control.MappingControl;
 
@@ -14,7 +11,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 @Table(name = "user_favourites", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "book_id"}))
 @Entity
 public class UserFavourite {
