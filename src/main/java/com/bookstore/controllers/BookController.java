@@ -1,6 +1,7 @@
 package com.bookstore.controllers;
 
 import com.bookstore.DTOs.BookDTO;
+import com.bookstore.enums.Genre;
 import com.bookstore.model.Book;
 import com.bookstore.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/books")
@@ -37,9 +39,9 @@ public class BookController {
             description = "Returns a list of all books available. Access = [ADMIN,USER]"
     )
 
-    public List<BookDTO> getAllBooks(){
+    public List<BookDTO> getAllBooks(@RequestParam (required = false) Genre genre){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return bookService.getAllBooks(auth);
+        return bookService.getAllBooks(auth, Optional.ofNullable(genre));
     }
 
     @GetMapping("/{id}")

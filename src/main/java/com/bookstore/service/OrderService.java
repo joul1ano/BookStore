@@ -113,9 +113,17 @@ public class OrderService {
     /*
     --------------Admin------------------
      */
-    public List<OrderDTO> getAllOrders(Optional<String> username){
-        if (username.isPresent()){
-            return orderRepository.findByUser_Username(username.get())
+    public List<OrderDTO> getAllOrders(Optional<String> username, Optional<OrderStatus> status){
+        if (username.isPresent() && status.isPresent()){
+            return orderRepository.findAllByUser_UsernameAndStatus(username.get(), status.get())
+                    .stream().map(orderMapper::toDTO).toList();
+        }
+        if(username.isPresent()){
+            return orderRepository.findAllByUser_Username(username.get())
+                    .stream().map(orderMapper::toDTO).toList();
+        }
+        if (status.isPresent()){
+            return orderRepository.findAllByStatus(status.get())
                     .stream().map(orderMapper::toDTO).toList();
         }
         return orderRepository.findAll().stream().map(orderMapper::toDTO).toList();

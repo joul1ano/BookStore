@@ -1,6 +1,7 @@
 package com.bookstore.service;
 
 import com.bookstore.DTOs.BookDTO;
+import com.bookstore.enums.Genre;
 import com.bookstore.exceptions.ResourceAlreadyExistsException;
 import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.BookMapper;
@@ -30,14 +31,19 @@ public class BookService {
         this.publisherRepository = publisherRepository;
     }
 
-    public List<BookDTO> getAllBooks(Authentication auth)
+    public List<BookDTO> getAllBooks(Authentication auth, Optional<Genre> genre)
     {
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        if(isAdmin){
+        if(isAdmin && genre.isPresent()){
+            return bookRepository.findAllByGenre(genre.get()).stream().map(bookMapper::toDTO).toList();
+        } else if (isAdmin && genre.isEmpty()) {
             return bookRepository.findAll().stream().map(bookMapper::toDTO).toList();
+        } else if (!isAdmin && genre.isPresent()) {
+            return bookRepository.findAllByGenreAndAvailabilityGreaterThan(genre.get(),0).stream().map(bookMapper::toDTO).toList();
         }
         return bookRepository.findByAvailabilityGreaterThan(0).stream().map(bookMapper::toDTO).toList();
+
     }
 
     public BookDTO getBookById(Long id) {

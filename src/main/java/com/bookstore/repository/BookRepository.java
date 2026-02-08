@@ -1,5 +1,6 @@
 package com.bookstore.repository;
 
+import com.bookstore.enums.Genre;
 import com.bookstore.model.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
@@ -14,4 +15,6 @@ public interface BookRepository extends JpaRepository<Book,Long> {
     Optional<Book> findById(Long id);
     List<Book> findByAvailabilityGreaterThan(int availability);
     boolean existsByTitleAndAuthor(String title, String author);
+    List<Book> findAllByGenre(Genre genre);
+    List<Book> findAllByGenreAndAvailabilityGreaterThan(Genre genre, int availability);
 }

@@ -6,6 +6,7 @@ import com.bookstore.exceptions.ResourceNotFoundException;
 import com.bookstore.mappers.UserMapper;
 import com.bookstore.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,8 +22,15 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<UserDTO> getAllUsers(){
-        return userRepository.findAll().stream().map(userMapper::toAdminDTO).toList();
+    public List<UserDTO> getAllUsers(Sort sort){
+        if (sort == null || sort.isUnsorted()) {
+            sort = Sort.by(Sort.Direction.ASC, "id");
+        }
+
+        return userRepository.findAll(sort)
+                .stream()
+                .map(userMapper::toAdminDTO)
+                .toList();
     }
 
     public UserDTO getUserById(Long id) {

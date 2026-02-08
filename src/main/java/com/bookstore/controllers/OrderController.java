@@ -4,6 +4,7 @@ import com.bookstore.DTOs.OrderDTO;
 import com.bookstore.DTOs.OrderDetailsDTO;
 import com.bookstore.DTOs.requests.PlaceOrderRequest;
 import com.bookstore.DTOs.requests.UpdateOrderStatusRequest;
+import com.bookstore.enums.OrderStatus;
 import com.bookstore.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -79,11 +80,10 @@ public class OrderController {
             summary = "Get all orders",
             description = "Returns a list of order summaries of all users. Access = [ADMIN]"
     )
-    public ResponseEntity<List<OrderDTO>> getAllOrders(@RequestParam(required = false) String username){
-        if (username != null){
-            return ResponseEntity.ok(orderService.getAllOrders(Optional.of(username)));
-        }
-        return ResponseEntity.ok(orderService.getAllOrders(Optional.empty()));
+    public ResponseEntity<List<OrderDTO>> getAllOrders(@RequestParam(required = false) String username,
+                                                       @RequestParam(required = false) OrderStatus status
+    ){
+        return ResponseEntity.ok(orderService.getAllOrders(Optional.ofNullable(username),Optional.ofNullable(status)));
     }
 
     @GetMapping("/orders/{id}")

@@ -8,6 +8,9 @@ import com.bookstore.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -34,8 +37,10 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     @Operation(summary = "Get all users", description = "Returns a list of all users. Access = [ADMIN]")
-    public List<UserDTO> getAllUsers(){
-        return userService.getAllUsers();
+    public List<UserDTO> getAllUsers(
+            @PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        return userService.getAllUsers(pageable.getSort());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
