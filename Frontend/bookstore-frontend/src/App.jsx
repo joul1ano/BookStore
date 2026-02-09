@@ -1,13 +1,8 @@
-import "./App.css";
-import BookList from "./components/BookList";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function App() {
-  return (
-    <div className="App">
-      <h1>Book Store</h1>
-      <BookList />
-    </div>
-  );
+  return <Register />;
 }
 
 export default App;
