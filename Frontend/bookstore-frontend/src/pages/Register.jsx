@@ -14,7 +14,7 @@ function Register() {
     confirmPassword: "",
   });
 
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
   const [success, setSuccess] = useState("");
 
   const togglePassword = () => {
@@ -26,39 +26,47 @@ function Register() {
       ...formData,
       [e.target.name]: e.target.value,
     });
+
+    setError(null);
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (formData.password !== formData.confirmPassword) {
-    setError("Passwords do not match");
-    return;
-  }
-
-  const { confirmPassword, ...requestData } = formData;
-
-  try {
-    const response = await registerUser(requestData);
-
-    if (response.token) {
-      localStorage.setItem("token", response.token);
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
     }
 
-    setSuccess("Registration successful!");
-    setError("");
-  } catch (err) {
-    setError(err.response?.data?.message || "Registration failed");
-    setSuccess("");
-  }
-};
+    const { confirmPassword, ...requestData } = formData;
+
+    try {
+      const response = await registerUser(requestData);
+
+      if (response.token) {
+        localStorage.setItem("token", response.token);
+      }
+
+      setSuccess("Registration successful!");
+      setError(null);
+    } catch (err) {
+      setError(err.response?.data?.message || { general: "Registration failed" });
+      setSuccess("");
+    }
+  };
 
   return (
     <div className="auth-container">
       <form className="auth-form" onSubmit={handleSubmit}>
         <h2>Register</h2>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && (
+          <ul style={{ color: "red", marginBottom: "1rem" }}>
+            {Object.values(error).map((msg, index) => (
+              <li key={index}>{msg}</li>
+            ))}
+          </ul>
+        )}
         {success && <p style={{ color: "green" }}>{success}</p>}
 
         <div className="form-group">
@@ -110,7 +118,7 @@ function Register() {
           Register
         </button>
         <span className="auth-redirect">
-           Already have an account? <a href="/login">Log in</a>
+          Already have an account? <a href="/login">Log in</a>
         </span>
       </form>
     </div>
