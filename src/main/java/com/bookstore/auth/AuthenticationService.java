@@ -2,6 +2,7 @@ package com.bookstore.auth;
 
 import com.bookstore.config.JwtService;
 import com.bookstore.enums.Role;
+import com.bookstore.exceptions.AuthException;
 import com.bookstore.exceptions.UsernameAlreadyExistsException;
 import com.bookstore.model.ShoppingCart;
 import com.bookstore.model.ShoppingCartItem;
@@ -10,7 +11,9 @@ import com.bookstore.repository.ShoppingCartRepository;
 import com.bookstore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +45,7 @@ public class AuthenticationService {
                 .createdAt(LocalDateTime.now())
                 .lastLoginAt(LocalDateTime.now())
                 .build();
-        //TODO - AUTOMATICALLY CREATE THE SHOPPING CART
+
         userRepository.save(user);
 
         var cart = ShoppingCart.builder().user(user).itemCount(0).totalCost(0).lastUpdatedAt(LocalDateTime.now()).build();
@@ -54,12 +57,19 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.getUsername(),
-                request.getPassword())
-        );
+        try{
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    request.getUsername(),
+                    request.getPassword())
+            );
+        }catch(UsernameNotFoundException e){
+            throw new AuthException("Username not found"); //??? axreiasto
+        }catch (BadCredentialsException e){
+            throw new AuthException(e.getMessage());
+        }
+
         var user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow();
+                .orElseThrow(() -> new AuthException("Username does not exist"));
 
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
