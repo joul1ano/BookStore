@@ -9,21 +9,29 @@ BookStore is a full-stack web application featuring a Java Spring Boot backend a
 
 ## Tech Stack:
 
-1) Language: Java
+1) Languages: Java, JavaScript
 2) Framework: Spring Boot
-3) Build Tool: Maven
-4) Database: PostgreSQL
-5) Authentication: JWT / Spring Security
-6) Version Control: Git / GitHub
+3) Libraries: React, Bootstrap
+4) Build Tools: Maven, Vite
+5) Database: PostgreSQL
+6) Authentication: JWT / Spring Security
+7) Version Control: Git / GitHub
 
 ## Installation:
-1) Clone the repository: A) git clone https://github.com/joul1ano/BookStore.git B) cd BookStore
+### Setting up the Backend
+1) Clone the repository: A) git clone https://github.com/joul1ano/BookStore.git B) cd BookStore/Backend
 2) Build with Maven:
    mvn clean install
 3) Configure Database:
    Create and configure your database connection in application.properties or application.yml
 4) Run the Application:
    mvn spring-boot:run
+
+### Setting up the Frontend
+1) cd Frontend/bookstore-frontend
+2) Install dependencies: npm install
+3) Run the development server: npm run dev
+4) Access the application: Open your browser and go to the local URL provided in your terminal
 
 ## API Documentation (Swagger UI)
 
