@@ -1,9 +1,18 @@
-import CreateBook from "./pages/CreateBook";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/Login";
+import BooksPage from "./pages/BooksPage";
+import BookDetails from "./pages/BookDetails";
 
 function App() {
-  return <Login />;
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/books" element={<BooksPage />} />
+        <Route path="/books/:id" element={<BookDetails />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;

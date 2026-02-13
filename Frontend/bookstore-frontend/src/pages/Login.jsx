@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { loginUser } from "../services/authService";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -9,6 +10,7 @@ function Login() {
     password: "",
   });
 
+  const navigate = useNavigate();
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState("");
 
@@ -36,24 +38,26 @@ function Login() {
         localStorage.setItem("token",response.token);
       }
 
-      setSuccess("Registration successful!");
+      setSuccess("Login successful!");
       setError(null);
+      navigate("/books");
       
     } catch (error) {
-      setError(err.response?.data?.message || { general: "Registration failed" });
+      setError(error.response?.data?.message || { general: "Login failed" });
       setSuccess("");
       
     }
   }
 
   return (
-    <div className="auth-container">
-      <form className="auth-form" onSubmit={handleSubmit}>
-        <h2>Login</h2>
+    <div className="auth-container d-flex justify-content-center align-items-center vh-100">
+      <form className="auth-form card shadow p-4" style={{ width: "100%", maxWidth: "400px" }} onSubmit={handleSubmit}>
+        <h2 className="text-center mb-4">Login</h2>
 
         {error && <p style={{ color: "red", marginBottom: "1rem" }}>{error}</p>}
+        {success && <p style={{ color: "green" }}>{success}</p>}
 
-        <div className="form-group">
+        <div className="form-group mb-3">
           <label>Username</label>
           <input
             name="username"
@@ -63,9 +67,9 @@ function Login() {
           />
         </div>
 
-        <div className="form-group password-group">
+        <div className="form-group mb-3">
           <label>Password</label>
-          <div className="password-wrapper">
+          <div className="password-wrapper input-group">
             <input
               name="password"
               type={showPassword ? "text" : "password"}
@@ -73,19 +77,23 @@ function Login() {
               placeholder="Enter your password"
               onChange={handleChange}
             />
-            <span className="toggle-password" onClick={togglePassword}>
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              onClick={togglePassword}
+            >
               {showPassword ? "Hide" : "Show"}
-            </span>
+            </button>
           </div>
         </div>
 
-        <button type="submit" className="auth-button btn btn-primary w-100">
+        <button type="submit" className="btn btn-primary w-100 mb-3">
           Login
         </button>
 
-        <span className="auth-redirect">
+        <p className="text-center mb-0">
           Don’t have an account? <a href="/register">Register</a>
-        </span>
+        </p>
       </form>
     </div>
   );
