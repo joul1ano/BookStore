@@ -2,9 +2,9 @@ BookStore is a full-stack web application featuring a Java Spring Boot backend a
 
 ## Features:
 
-1) User Perspective
+1) User Perspective <br />
    Customers can browse the book collection, add items to a list of favorites, and manage a shopping cart. The system allows users to place orders and track their order history and status.
-2) Admin Perspective
+2) Admin Perspective <br />
    Administrators have access to tools to browse the full list of books and registered users. They can perform CRUD operations to create new book entries or update existing ones, as well as manage customer orders and update their fulfillment status.
 
 ## Tech Stack:
