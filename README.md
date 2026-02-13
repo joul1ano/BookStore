@@ -1,11 +1,11 @@
-BookStore is an online bookstore backend application built with Java Spring Boot focused on developing RESTful APIs for typical e-commerce bookstore features such as managing books, shopping carts, orders, and users. It demonstrates core backend capabilities including CRUD operations, user authentication, and role-based access control.
+BookStore is a full-stack web application featuring a Java Spring Boot backend and a React frontend built with Vite and Bootstrap. The system provides a complete solution for managing an online bookstore through a RESTful API and a responsive user interface, supporting role-based access for both customers and administrators.
 
 ## Features:
 
-1) Full CRUD for Books, Orders, Users, and Shopping Cart
-2) Secure user authentication and role-based access
-3) Spring Boot backend with efficient data handling
-4) Organized codebase ready for extension
+1) User Perspective
+   Customers can browse the book collection, add items to a list of favorites, and manage a shopping cart. The system allows users to place orders and track their order history and status.
+2) Admin Perspective
+   Administrators have access to tools to browse the full list of books and registered users. They can perform CRUD operations to create new book entries or update existing ones, as well as manage customer orders and update their fulfillment status.
 
 ## Tech Stack:
 
