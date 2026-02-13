@@ -54,7 +54,7 @@ function BookDetails() {
 
               <ul className="list-group list-group-flush mb-4">
                 <li className="list-group-item">
-                  <strong>Id:</strong> {book.id}
+                  <strong>ID:</strong> {book.id}
                 </li>
                 <li className="list-group-item">
                   <strong>Genre:</strong> {book.genre}
