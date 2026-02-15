@@ -1,7 +1,27 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useCart } from "../context/CartContext.jsx";
 
 function BookCard({ book }) {
+  const { addToCart } = useCart();
+  const [loading, setLoading] = useState(false);
+  const [added, setAdded] = useState(false);
+
+  const handleAddToCart = async () => {
+    try {
+      setLoading(true);
+      await addToCart(book.id);
+      setAdded(true);
+      setTimeout(() => {
+      setAdded(false);
+    }, 1000);
+    } catch (error) {
+      alert("Failed to add to cart");
+      console.log(error)
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="card h-100 shadow-sm">
       <div className="card-body d-flex flex-column">
@@ -24,10 +44,11 @@ function BookCard({ book }) {
           </Link>
 
           <button
-            className="btn btn-primary w-100"
-            disabled
+            className={`btn ${added ? "btn-success" : "btn-primary"} w-100`}
+            onClick={handleAddToCart}
+            disabled={loading}
           >
-            Add to Cart
+            {added ? "Added ✓" : loading ? "Adding..." : "Add to Cart"}
           </button>
         </div>
       </div>

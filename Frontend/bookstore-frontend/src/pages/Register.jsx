@@ -118,7 +118,7 @@ function Register() {
           Register
         </button>
         <span className="auth-redirect">
-          Already have an account? <a href="/login">Log in</a>
+          Already have an account? <a href="/">Log in</a>
         </span>
       </form>
     </div>

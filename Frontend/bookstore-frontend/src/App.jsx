@@ -4,10 +4,13 @@ import BooksPage from "./pages/BooksPage";
 import BookDetails from "./pages/BookDetails";
 import Register from "./pages/Register"
 import MainLayout from "./Layouts/MainLayout";
+import { CartProvider } from "./context/CartContext.jsx";
+import PreviewCart from "./pages/PreviewCart";
 
 function App() {
   return (
-    <Router>
+    <CartProvider>
+      <Router>
       <Routes>
 
         {/* No navbar */}
@@ -18,10 +21,13 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/books" element={<BooksPage />} />
           <Route path="/books/:id" element={<BookDetails />} />
+          <Route path="/cart" element={<PreviewCart />} />
         </Route>
 
       </Routes>
     </Router>
+
+    </CartProvider>
   );
 }
 

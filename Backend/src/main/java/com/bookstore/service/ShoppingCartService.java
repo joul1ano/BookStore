@@ -57,27 +57,30 @@ public class ShoppingCartService {
         return cartDetailsDTO;
     }
 
-    public void cleanUp(Long id){
-        ShoppingCart x = cartRepository.findById(id).orElseThrow();
-        x.setItemCount(0);
-        x.setTotalCost(0);
-        cartRepository.save(x);
-    }
-
     public void addItemToCart(Long userId, Long bookId, int quantity){
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book with id: " + bookId + " not found"));
         ShoppingCart cart = cartRepository.findByUserId(userId);
 
         /*
-        Checking if the book availability is enough
+        Checking if book already exists in cart
          */
-        if (isAvailabilityEnough(bookId, quantity)) {
-            ShoppingCartItem item = ShoppingCartItem.builder().shoppingCart(cart).book(book).quantity(quantity).build();
-            itemsRepository.save(item);
-            updateCartStatus(cart,quantity,book.getPrice());
-        }else
-            throw new InsufficientStockException("Requested quantity exceeds the book's available stock");
+        Optional<ShoppingCartItem> itemOptional = itemsRepository.findByBook_IdAndShoppingCart_Id(bookId,cart.getId());
+        if(itemOptional.isPresent()){
+            updateItemQuantity(userId,bookId,itemOptional.get().getQuantity() + 1); //Increasing the quantity by 1
+        }else{
+            /*
+            Checking if the book availability is enough
+            */
+            if (isAvailabilityEnough(bookId, quantity)) {
+                ShoppingCartItem item = ShoppingCartItem.builder().shoppingCart(cart).book(book).quantity(quantity).build();
+                itemsRepository.save(item);
+                updateCartStatus(cart,quantity,book.getPrice());
+            }else
+                throw new InsufficientStockException("Requested quantity exceeds the book's available stock");
+        }
+
+
 
 
     }

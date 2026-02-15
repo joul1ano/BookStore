@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { loginUser } from "../services/authService";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const { fetchCartCount } = useCart();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -34,18 +36,25 @@ function Login() {
     try {
       const response = await loginUser(loginData);
 
-      if(response.token){
-        localStorage.setItem("token",response.token);
+      if (response.token) {
+        localStorage.setItem("token", response.token);
+        await fetchCartCount();
       }
 
       setSuccess("Login successful!");
+      
       setError(null);
       navigate("/books");
-      
+
     } catch (error) {
-      setError(error.response?.data?.message || { general: "Login failed" });
+      console.log(error)
+      setError(
+        error.response?.data?.general ||
+        error.response?.data?.message ||
+        "Login failed"
+      );
       setSuccess("");
-      
+
     }
   }
 

@@ -1,18 +1,26 @@
+import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+
 function Navbar() {
-  const cartItemCount = 3; // fake number for now
+  const { cartItemCount } = useCart();
+  const navigate = useNavigate();
 
   return (
     <nav className="navbar navbar-light bg-light px-4">
       <span className="navbar-brand">My Bookstore</span>
 
-      <div className="position-relative">
-        <i className="bi bi-cart fs-4"></i>
+      <div
+        className="position-relative"
+        style={{ cursor: "pointer" }}
+        onClick={() => navigate("/cart")}
+      >
+        <i className="bi bi-cart fs-3"></i>
 
-        <span
-          className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-        >
-          {cartItemCount}
-        </span>
+        {cartItemCount > 0 && (
+          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            {cartItemCount}
+          </span>
+        )}
       </div>
     </nav>
   );
