@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getBookById } from "../services/bookService";
 import { useCart } from "../context/CartContext";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function BookDetails() {
   const { id } = useParams();
@@ -11,9 +12,14 @@ function BookDetails() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
- 
+
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const backPath = location.state?.from || "/books";
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -82,9 +88,12 @@ function BookDetails() {
               </ul>
 
               <div className="d-flex gap-2">
-                <Link to="/books" className="btn btn-outline-secondary w-50">
+                <button
+                  className="btn btn-outline-secondary w-50"
+                  onClick={() => navigate(backPath)}
+                >
                   Back
-                </Link>
+                </button>
 
                 <button
                   className={`btn ${added ? "btn-success" : "btn-primary"} w-50`}
