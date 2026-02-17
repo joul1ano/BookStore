@@ -7,6 +7,7 @@ function Navbar() {
   const location = useLocation();
 
   const isFavouritesActive = location.pathname === "/favourites";
+  const isProfileActive = location.pathname === "/me";
 
   return (
     <nav className="navbar navbar-light bg-light px-4 d-flex justify-content-between">
@@ -26,10 +27,9 @@ function Navbar() {
           onClick={() => navigate("/favourites")}
         >
           <i
-            className={`bi ${
-              isFavouritesActive ? "bi-bookmark-fill" : "bi-bookmark"
-            } fs-3`}
-          ></i>
+            className={`bi ${isFavouritesActive ? "bi-bookmark-fill" : "bi-bookmark"
+              } fs-3`}
+          />
         </div>
 
         {/* Cart */}
@@ -38,13 +38,23 @@ function Navbar() {
           style={{ cursor: "pointer" }}
           onClick={() => navigate("/cart")}
         >
-          <i className="bi bi-cart fs-2"></i>
-
+          <i className="bi bi-cart fs-3"></i>
           {cartItemCount > 0 && (
             <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
               {cartItemCount}
             </span>
           )}
+        </div>
+
+        {/* Profile */}
+        <div
+          style={{ cursor: "pointer" }}
+          onClick={() => navigate("/me")}
+        >
+          <i
+            className={`bi ${isProfileActive ? "bi-person-fill" : "bi-person"
+              } fs-3`}
+          />
         </div>
 
       </div>
