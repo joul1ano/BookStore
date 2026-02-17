@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_URL = "http://localhost:8080";
-const token = localStorage.getItem("token"); //Mporei na vgalei provlima, ksanvalto sta functions an nai
+const token = localStorage.getItem("token"); 
 
 export const addToCart = async (bookId) => {
   const quantity = 1;

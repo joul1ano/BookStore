@@ -9,6 +9,9 @@ import PreviewCart from "./pages/PreviewCart";
 import Checkout from "./pages/Checkout.jsx";
 import { FavouriteProvider } from "./context/FavouriteContext.jsx";
 import FavouriteBooks from "./pages/FavouriteBooks.jsx";
+import Profile from "./pages/Profile.jsx"
+import AdminLayout from "./Layouts/AdminLayout.jsx"
+import AdminProducts from "./pages/AdminProducts.jsx";
 
 function App() {
   return (
@@ -28,6 +31,11 @@ function App() {
               <Route path="/cart" element={<PreviewCart />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/favourites" element={<FavouriteBooks />} />
+              <Route path="/me" element={<Profile />} />
+            </Route>
+
+            <Route element={<AdminLayout />}>
+              <Route path="/admin/products" element={<AdminProducts />} />
             </Route>
 
           </Routes>
