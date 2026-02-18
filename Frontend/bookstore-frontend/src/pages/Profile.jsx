@@ -69,9 +69,9 @@ function ProfilePage() {
         <div className="d-grid gap-2">
           <button
             className="btn btn-primary"
-            onClick={() => navigate("/orders")}
+            onClick={() => navigate("/me/orders")}
           >
-            <i class="bi bi-box"></i> My Orders
+            <i className="bi bi-box"></i> My Orders
           </button>
         </div>
 

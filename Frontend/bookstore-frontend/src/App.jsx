@@ -12,6 +12,8 @@ import FavouriteBooks from "./pages/FavouriteBooks.jsx";
 import Profile from "./pages/Profile.jsx"
 import AdminLayout from "./Layouts/AdminLayout.jsx"
 import AdminProducts from "./pages/AdminProducts.jsx";
+import OrdersPage from "./pages/OrdersPage";
+import OrderDetailsPage from "./pages/OrderDetails";
 
 function App() {
   return (
@@ -28,10 +30,12 @@ function App() {
             <Route element={<MainLayout />}>
               <Route path="/books" element={<BooksPage />} />
               <Route path="/books/:id" element={<BookDetails />} />
-              <Route path="/cart" element={<PreviewCart />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/favourites" element={<FavouriteBooks />} />
+              <Route path="me/cart" element={<PreviewCart />} />
+              <Route path="me/cart/checkout" element={<Checkout />} />
+              <Route path="me/favourites" element={<FavouriteBooks />} />
               <Route path="/me" element={<Profile />} />
+              <Route path="/me/orders" element={<OrdersPage />} />
+              <Route path="/me/orders/:orderId" element={<OrderDetailsPage />} />
             </Route>
 
             <Route element={<AdminLayout />}>

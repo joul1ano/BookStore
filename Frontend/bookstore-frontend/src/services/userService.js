@@ -1,9 +1,10 @@
 import axios from "axios";
 
 const API_URL = "http://localhost:8080";
-const token = localStorage.getItem("token");
+
 
 export const getMe = async () => {
+    const token = localStorage.getItem("token");
     if (!token) {
         throw new Error("User not authenticated");
     }
