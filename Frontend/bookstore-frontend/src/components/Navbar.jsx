@@ -6,7 +6,7 @@ function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isFavouritesActive = location.pathname === "/favourites";
+  const isFavouritesActive = location.pathname === "/me/favourites";
   const isProfileActive = location.pathname === "/me";
 
   return (
@@ -24,7 +24,7 @@ function Navbar() {
         {/* Favourites */}
         <div
           style={{ cursor: "pointer" }}
-          onClick={() => navigate("/favourites")}
+          onClick={() => navigate("/me/favourites")}
         >
           <i
             className={`bi ${isFavouritesActive ? "bi-bookmark-fill" : "bi-bookmark"
@@ -36,7 +36,7 @@ function Navbar() {
         <div
           className="position-relative"
           style={{ cursor: "pointer" }}
-          onClick={() => navigate("/cart")}
+          onClick={() => navigate("/me/cart")}
         >
           <i className="bi bi-cart fs-3"></i>
           {cartItemCount > 0 && (

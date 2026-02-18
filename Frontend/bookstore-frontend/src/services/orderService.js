@@ -1,9 +1,10 @@
 import axios from "axios";
 
 const API_URL = "http://localhost:8080";
-const token = localStorage.getItem("token");
+
 
 export const placeOrder = async (orderData) => {
+  const token = localStorage.getItem("token");
   const response = await axios.post(
     `${API_URL}/users/me/orders`,
     orderData,
@@ -12,6 +13,33 @@ export const placeOrder = async (orderData) => {
         "Content-Type": "application/json",
       },
      }
+  );
+  return response.data;
+};
+
+export const getMyOrders = async () => {
+  const token = localStorage.getItem("token");
+  const response = await axios.get(
+    `${API_URL}/users/me/orders`,
+    { headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+     }
+  )
+  
+  return response.data;
+};
+
+export const getOrderById = async (orderId) => {
+  const token = localStorage.getItem("token");
+  const response = await axios.get(
+    `${API_URL}/users/me/orders/${orderId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
   return response.data;
 };

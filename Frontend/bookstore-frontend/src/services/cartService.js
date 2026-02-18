@@ -1,9 +1,10 @@
 import axios from "axios";
 
 const API_URL = "http://localhost:8080";
-const token = localStorage.getItem("token"); 
+
 
 export const addToCart = async (bookId) => {
+  const token = localStorage.getItem("token"); 
   const quantity = 1;
 
   if (!token) {
@@ -28,6 +29,7 @@ export const addToCart = async (bookId) => {
 };
 
 export const getCartSummary = async () => {
+  const token = localStorage.getItem("token"); 
   if (!token) {
     throw new Error("User not authenticated");
   }
@@ -45,6 +47,7 @@ export const getCartSummary = async () => {
 };
 
 export const getCartItems = async () => {
+  const token = localStorage.getItem("token"); 
   const response = await axios.get(
     `${API_URL}/users/me/cart/items`,
     {
@@ -57,6 +60,7 @@ export const getCartItems = async () => {
 };
 
 export const removeCartItem = async (bookId) => {
+  const token = localStorage.getItem("token"); 
   await axios.delete(
     `${API_URL}/users/me/cart/items/${bookId}`,
     {

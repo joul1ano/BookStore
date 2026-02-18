@@ -1,9 +1,10 @@
 import axios from "axios";
 
 const API_URL = "http://localhost:8080";
-const token = localStorage.getItem("token");
+
 
 export const getFavouriteBooks = async () => {
+  const token = localStorage.getItem("token");
   const response = await axios.get(
     `${API_URL}/users/me/favourites`,
     { headers: {
@@ -15,6 +16,7 @@ export const getFavouriteBooks = async () => {
 };
 
 export const addToFavourites = async (bookId) => {
+  const token = localStorage.getItem("token");
   await axios.post(
     `${API_URL}/users/me/favourites`,
     { bookId },
@@ -26,6 +28,7 @@ export const addToFavourites = async (bookId) => {
 };
 
 export const removeFromFavourites = async (bookId) => {
+  const token = localStorage.getItem("token");
   await axios.delete(
     `${API_URL}/users/me/favourites/${bookId}`,
     { headers: {
