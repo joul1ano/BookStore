@@ -11,8 +11,10 @@ export function CartProvider({ children }) {
   const [cartItemCount, setCartItemCount] = useState(0);
 
   const fetchCartCount = async () => {
+    const role = localStorage.getItem("role");
+    const token = localStorage.getItem("token");
     try {
-      if (!localStorage.getItem("token")) {
+      if (!token || role !== "USER") {
         setCartItemCount(0);
         return;
       }

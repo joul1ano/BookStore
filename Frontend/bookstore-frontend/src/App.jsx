@@ -14,39 +14,45 @@ import AdminLayout from "./Layouts/AdminLayout.jsx"
 import AdminProducts from "./pages/AdminProducts.jsx";
 import OrdersPage from "./pages/OrdersPage";
 import OrderDetailsPage from "./pages/OrderDetails";
+import CreateBook from "./pages/CreateBook";
+import EditBook from "./pages/EditBook";
 
 function App() {
   return (
-    <CartProvider>
-      <FavouriteProvider>
-        <Router>
-          <Routes>
+    <CartProvider>        {/* ← wraps everything, Login can use useCart() */}
+      <Router>
+        <Routes>
 
-            {/* No navbar */}
-            <Route path="/" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+          {/* No navbar */}
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-            {/* With navbar */}
-            <Route element={<MainLayout />}>
-              <Route path="/books" element={<BooksPage />} />
-              <Route path="/books/:id" element={<BookDetails />} />
-              <Route path="me/cart" element={<PreviewCart />} />
-              <Route path="me/cart/checkout" element={<Checkout />} />
-              <Route path="me/favourites" element={<FavouriteBooks />} />
-              <Route path="/me" element={<Profile />} />
-              <Route path="/me/orders" element={<OrdersPage />} />
-              <Route path="/me/orders/:orderId" element={<OrderDetailsPage />} />
-            </Route>
+          {/* User routes — FavouriteProvider only mounts here */}
+          <Route element={
+            <FavouriteProvider>
+              <MainLayout />
+            </FavouriteProvider>
+          }>
+            <Route path="/books" element={<BooksPage />} />
+            <Route path="/books/:id" element={<BookDetails />} />
+            <Route path="me/cart" element={<PreviewCart />} />
+            <Route path="me/cart/checkout" element={<Checkout />} />
+            <Route path="me/favourites" element={<FavouriteBooks />} />
+            <Route path="/me" element={<Profile />} />
+            <Route path="/me/orders" element={<OrdersPage />} />
+            <Route path="/me/orders/:orderId" element={<OrderDetailsPage />} />
+          </Route>
 
-            <Route element={<AdminLayout />}>
-              <Route path="/admin/products" element={<AdminProducts />} />
-            </Route>
+          {/* Admin routes — FavouriteProvider never mounts here */}
+          <Route element={<AdminLayout />}>
+            <Route path="/admin/products" element={<AdminProducts />} />
+            <Route path="/admin/products/new" element={<CreateBook />} />
+            <Route path="/admin/products/:bookId" element={<EditBook />} />
+          </Route>
 
-          </Routes>
-        </Router>
-      </FavouriteProvider>
+        </Routes>
+      </Router>
     </CartProvider>
   );
 }
-
 export default App;

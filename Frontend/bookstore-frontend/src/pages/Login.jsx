@@ -30,33 +30,36 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const loginData = formData;
-
     try {
-      const response = await loginUser(loginData);
+      const response = await loginUser(formData);
 
-      if (response.token) {
+      if (response.token && response.role === "USER") {
         localStorage.setItem("token", response.token);
+        localStorage.setItem("role", response.role); // store role
         await fetchCartCount();
       }
 
       setSuccess("Login successful!");
-      
       setError(null);
-      navigate("/books");
+
+      // Navigate based on role
+      if (response.role === "ADMIN") {
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("role", response.role); // store role
+        navigate("/admin/products");
+      } else {
+        navigate("/books");
+      }
 
     } catch (error) {
-      console.log(error)
       setError(
         error.response?.data?.general ||
         error.response?.data?.message ||
         "Login failed"
       );
       setSuccess("");
-
     }
-  }
+  };
 
   return (
     <div className="auth-container d-flex justify-content-center align-items-center vh-100">

@@ -23,6 +23,12 @@ function ProfilePage() {
     fetchUser();
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    navigate("/");
+  };
+
   if (loading) {
     return (
       <div className="container mt-5 text-center">
@@ -72,6 +78,13 @@ function ProfilePage() {
             onClick={() => navigate("/me/orders")}
           >
             <i className="bi bi-box"></i> My Orders
+          </button>
+
+          <button
+            className="btn btn-outline-danger"
+            onClick={handleLogout}
+          >
+            <i className="bi bi-box-arrow-right"></i> Logout
           </button>
         </div>
 

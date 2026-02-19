@@ -1,6 +1,17 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 function AdminSidebar() {
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    navigate("/");
+  };
+
+
   return (
     <aside
       className="bg-white border-end p-3 d-flex flex-column"
@@ -43,7 +54,8 @@ function AdminSidebar() {
 
       {/* Logout */}
       <div className="mt-auto pt-4">
-        <button className="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center gap-2">
+        <button className="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center gap-2"
+          onClick={handleLogout}>
           <i className="bi bi-box-arrow-right"></i>
           Logout
         </button>

@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
 import { getAllBooks } from "../services/bookService";
 import AdminBookRow from "../components/AdminBookRow";
+import { useNavigate } from "react-router-dom";
 
 function AdminProducts() {
   const [books, setBooks] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getAllBooks().then(setBooks);
   }, []);
+
+  const handleBookDeleted = (deletedId) => {
+    setBooks(prev => prev.filter(book => book.id !== deletedId));
+  };
 
   return (
     <div className="p-4">
@@ -26,8 +32,9 @@ function AdminProducts() {
           </small>
         </div>
 
-        <button className="btn btn-success">
-          <i class="bi bi-plus-circle"></i> Add New Book
+        <button className="btn btn-success"
+          onClick={() => navigate("/admin/products/new")}>
+          <i className="bi bi-plus-circle"></i> Add New Book
         </button>
       </div>
 
@@ -35,13 +42,13 @@ function AdminProducts() {
       <div className="d-flex gap-2 mb-4">
         <input
           className="form-control"
-          placeholder="Search by title, author, or ISBN..."
+          placeholder="Search by title, author, or ID..."
         />
         <button className="btn btn-outline-secondary">
-          <i class="bi bi-search"></i>
+          <i className="bi bi-search"></i>
         </button>
         <button className="btn btn-outline-secondary">
-          <i class="bi bi-funnel"></i>
+          <i className="bi bi-funnel"></i>
         </button>
       </div>
 
@@ -61,7 +68,7 @@ function AdminProducts() {
 
           <tbody>
             {books.map(book => (
-              <AdminBookRow key={book.id} book={book} />
+              <AdminBookRow key={book.id} book={book} onDelete={handleBookDeleted} />
             ))}
           </tbody>
         </table>

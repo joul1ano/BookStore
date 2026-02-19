@@ -1,6 +1,7 @@
 import "../styles/Auth.css";
 import { useState } from "react";
 import { registerUser } from "../services/authService";
+import { useNavigate, useParams } from "react-router-dom";
 
 function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +17,8 @@ function Register() {
 
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState("");
+
+  const navigate = useNavigate();
 
   const togglePassword = () => {
     setShowPassword(prev => !prev);
@@ -49,6 +52,7 @@ function Register() {
 
       setSuccess("Registration successful!");
       setError(null);
+      navigate("/books");
     } catch (err) {
       setError(err.response?.data?.message || { general: "Registration failed" });
       setSuccess("");

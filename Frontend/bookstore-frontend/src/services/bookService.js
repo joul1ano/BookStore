@@ -55,3 +55,18 @@ export const getBookById = async (id) => {
   }
 
 }
+
+export const updateBook = async (id, bookData) => {
+  const token = localStorage.getItem("token");
+  const response = await axios.put(`${API_URL}/books/${id}`, bookData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const deleteBook = async (id) => {
+  const token = localStorage.getItem("token");
+  await axios.delete(`${API_URL}/books/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
