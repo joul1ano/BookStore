@@ -9,14 +9,11 @@ import com.bookstore.model.Book;
 import com.bookstore.repository.BookRepository;
 import com.bookstore.repository.PublisherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 public class BookService {
@@ -36,13 +33,13 @@ public class BookService {
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         if(isAdmin && genre.isPresent()){
-            return bookRepository.findAllByGenre(genre.get()).stream().map(bookMapper::toDTO).toList();
+            return bookRepository.findAllByGenreAndIsDeletedFalse(genre.get()).stream().map(bookMapper::toDTO).toList();
         } else if (isAdmin && genre.isEmpty()) {
-            return bookRepository.findAll().stream().map(bookMapper::toDTO).toList();
+            return bookRepository.findAllByIsDeletedFalse().stream().map(bookMapper::toDTO).toList();
         } else if (!isAdmin && genre.isPresent()) {
-            return bookRepository.findAllByGenreAndAvailabilityGreaterThan(genre.get(),0).stream().map(bookMapper::toDTO).toList();
+            return bookRepository.findAllByGenreAndAvailabilityGreaterThanAndIsDeletedFalse(genre.get(),0).stream().map(bookMapper::toDTO).toList();
         }
-        return bookRepository.findByAvailabilityGreaterThan(0).stream().map(bookMapper::toDTO).toList();
+        return bookRepository.findByAvailabilityGreaterThanAndIsDeletedFalse(0).stream().map(bookMapper::toDTO).toList();
 
     }
 
@@ -88,8 +85,9 @@ public class BookService {
     public void deleteBookById(Long id){
         Book bookToDelete = bookRepository.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("Book with id: " + id + " not found"));
+        bookToDelete.setDeleted(true);
 
-        bookRepository.delete(bookToDelete);
+        bookRepository.save(bookToDelete);
     }
 
 }

@@ -107,7 +107,7 @@ public class BookServiceTest {
         BookDTO bookDTO3 = new BookDTO(16L, "Book 3", "Author C", "Desc",
                 Genre.FICTION, 550, 29.90, 32, 4L);
 
-        when(bookRepository.findAll()).thenReturn(booksList);
+        when(bookRepository.findAllByIsDeletedFalse()).thenReturn(booksList);
 
         when(bookMapper.toDTO(book1)).thenReturn(bookDTO1);
         when(bookMapper.toDTO(book2)).thenReturn(bookDTO2);
@@ -121,7 +121,7 @@ public class BookServiceTest {
         Assertions.assertEquals(16L,bookDTOList.get(2).getId());
         Assertions.assertEquals(3,bookDTOList.size());
 
-        verify(bookRepository).findAll();
+        verify(bookRepository).findAllByIsDeletedFalse();
         verify(bookMapper, times(3)).toDTO(any(Book.class));
 
     }
@@ -131,12 +131,12 @@ public class BookServiceTest {
     void testGetAllBooks_Fail(){
         List<Book> bookList = List.of();
 
-        when(bookRepository.findAll()).thenReturn(bookList);
+        when(bookRepository.findAllByIsDeletedFalse()).thenReturn(bookList);
         List<BookDTO> bookDTOList = bookService.getAllBooks();
 
         Assertions.assertEquals(true, bookDTOList.isEmpty());
 
-        verify(bookRepository).findAll();
+        verify(bookRepository).findAllByIsDeletedFalse();
         verify(bookMapper,never()).toDTO(any());
 
     }

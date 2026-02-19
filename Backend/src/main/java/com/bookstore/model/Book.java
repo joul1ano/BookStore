@@ -45,4 +45,7 @@ public class Book {
     @JoinColumn(name = "publisher_id")
     private Publisher publisher;
 
+    @Column(name = "is_deleted")
+    private boolean isDeleted = false;
+
 }
