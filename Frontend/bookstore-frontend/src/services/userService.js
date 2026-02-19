@@ -20,3 +20,11 @@ export const getMe = async () => {
     )
     return response.data;
 };
+
+export const getAllUsers = async () => {
+  const token = localStorage.getItem("token");
+  const response = await axios.get(`${API_URL}/users`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
