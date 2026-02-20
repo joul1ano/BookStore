@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getOrderById } from "../services/orderService";   
-import { getBookById } from "../services/bookService";      
+import { getMyOrderById } from "../../services/orderService";   
+import { getBookById } from "../../services/bookService";      
 
 function OrderDetailsPage() {
   const { orderId } = useParams();
@@ -14,7 +14,7 @@ function OrderDetailsPage() {
     const fetchOrderDetails = async () => {
       try {
         // 1. Fetch the order
-        const orderData = await getOrderById(orderId);
+        const orderData = await getMyOrderById(orderId);
         setOrder(orderData);
 
         // 2. For each item, fetch the corresponding book details

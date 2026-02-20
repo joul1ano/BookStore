@@ -1,21 +1,24 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
-import BooksPage from "./pages/BooksPage";
-import BookDetails from "./pages/BookDetails";
+import BooksPage from "./pages/users/BooksPage";
+import BookDetails from "./pages/users/BookDetails";
 import Register from "./pages/Register"
 import MainLayout from "./Layouts/MainLayout";
 import { CartProvider } from "./context/CartContext.jsx";
-import PreviewCart from "./pages/PreviewCart";
-import Checkout from "./pages/Checkout.jsx";
+import PreviewCart from "./pages/users/PreviewCart";
+import Checkout from "./pages/users/Checkout.jsx";
 import { FavouriteProvider } from "./context/FavouriteContext.jsx";
-import FavouriteBooks from "./pages/FavouriteBooks.jsx";
-import Profile from "./pages/Profile.jsx"
+import FavouriteBooks from "./pages/users/FavouriteBooks.jsx";
+import Profile from "./pages/users/Profile.jsx"
 import AdminLayout from "./Layouts/AdminLayout.jsx"
-import AdminProducts from "./pages/AdminProducts.jsx";
-import OrdersPage from "./pages/OrdersPage";
-import OrderDetailsPage from "./pages/OrderDetails";
-import CreateBook from "./pages/CreateBook";
-import EditBook from "./pages/EditBook";
+import AdminProducts from "./pages/admin/AdminProducts.jsx";
+import OrdersPage from "./pages/users/OrdersPage";
+import OrderDetailsPage from "./pages/users/OrderDetails";
+import CreateBook from "./pages/admin/CreateBook";
+import EditBook from "./pages/admin/EditBook";
+import UsersPage from "./pages/admin/UsersPage.jsx";
+import AdminOrders from "./pages/admin/AdminOrders";
+import AdminOrderDetail from "./pages/admin/AdminOrderDetails";
 
 function App() {
   return (
@@ -48,6 +51,9 @@ function App() {
             <Route path="/admin/products" element={<AdminProducts />} />
             <Route path="/admin/products/new" element={<CreateBook />} />
             <Route path="/admin/products/:bookId" element={<EditBook />} />
+            <Route path="/admin/users" element={<UsersPage />} />
+            <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/orders/:orderId" element={<AdminOrderDetail />} />
           </Route>
 
         </Routes>

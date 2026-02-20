@@ -1,75 +1,69 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { getBookById, updateBook } from "../services/bookService";
 
-function EditBook() {
-    const { bookId } = useParams();
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { createBook } from "../../services/bookService";
+
+function CreateBook() {
     const navigate = useNavigate();
 
-    const [formData, setFormData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [formData, setFormData] = useState({
+        title: "",
+        author: "",
+        description: "",
+        genre: "",
+        numberOfPages: "",
+        price: "",
+        availability: "",
+        publisherId: ""
+    });
+
+    const requiredFields = ["title", "author", "genre", "numberOfPages", "price", "availability", "publisherId"];
+
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState("");
-
-    useEffect(() => {
-        const fetchBook = async () => {
-            try {
-                const book = await getBookById(bookId);
-                setFormData({
-                    id: book.id,
-                    title: book.title,
-                    author: book.author,
-                    description: book.description || "",
-                    genre: book.genre,
-                    numberOfPages: book.numberOfPages,
-                    price: book.price,
-                    availability: book.availability,
-                    publisherId: book.publisherId,
-                });
-            } catch (err) {
-                console.error("Failed to fetch book", err);
-                setError("Failed to load book details.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchBook();
-    }, [bookId]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
         setError(null);
-        setSuccess("");
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        for (const field of requiredFields) {
+            if (!formData[field] || formData[field].toString().trim() === "") {
+                setError("Please fill in all required fields.");
+                return;
+            }
+        }
+
         setError(null);
 
         try {
-            await updateBook(bookId, {
+            await createBook({
                 ...formData,
                 numberOfPages: Number(formData.numberOfPages),
                 price: Number(formData.price),
                 availability: Number(formData.availability),
-                publisherId: Number(formData.publisherId),
+                publisherId: formData.publisherId ? Number(formData.publisherId) : null,
             });
 
-            setSuccess("Book updated successfully!");
-
+            setSuccess("Book created successfully!");
+            setFormData({
+                title: "",
+                author: "",
+                description: "",
+                genre: "",
+                numberOfPages: "",
+                price: "",
+                availability: "",
+                publisherId: "",
+            });
         } catch (err) {
-            setError(err.response?.data?.message || "Failed to update book.");
+            setError(err.response?.data?.message || "Failed to create book.");
+            setSuccess("");
         }
     };
-
-    if (loading) {
-        return <div className="p-4 text-center">Loading book details...</div>;
-    }
-
-    if (!formData) {
-        return <div className="p-4 text-center text-muted">Book not found.</div>;
-    }
 
     return (
         <div className="p-4">
@@ -84,15 +78,12 @@ function EditBook() {
                     Products
                 </span>
                 <span className="mx-1">›</span>
-                <span className="fw-semibold">Edit Book</span>
+                <span className="fw-semibold">Add New Book</span>
             </div>
 
             {/* Title row */}
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 className="fw-bold">Edit Book</h2>
-                    <small className="text-muted">ID: {formData.id}</small>
-                </div>
+                <h2 className="fw-bold">Add New Book</h2>
                 <button
                     className="btn btn-outline-secondary"
                     onClick={() => navigate("/admin/products")}
@@ -102,8 +93,12 @@ function EditBook() {
             </div>
 
             {/* Alerts */}
-            {error && <div className="alert alert-danger">{error}</div>}
-            {success && <div className="alert alert-success">{success}</div>}
+            {error && (
+                <div className="alert alert-danger">{error}</div>
+            )}
+            {success && (
+                <div className="alert alert-success">{success}</div>
+            )}
 
             {/* Form card */}
             <div className="card shadow-sm">
@@ -119,6 +114,7 @@ function EditBook() {
                                 <input
                                     className="form-control"
                                     name="title"
+                                    placeholder="Enter book title"
                                     onChange={handleChange}
                                     value={formData.title}
                                 />
@@ -132,6 +128,7 @@ function EditBook() {
                                 <input
                                     className="form-control"
                                     name="author"
+                                    placeholder="Enter author name"
                                     onChange={handleChange}
                                     value={formData.author}
                                 />
@@ -181,6 +178,7 @@ function EditBook() {
                                     type="number"
                                     className="form-control"
                                     name="numberOfPages"
+                                    placeholder="e.g. 320"
                                     onChange={handleChange}
                                     value={formData.numberOfPages}
                                 />
@@ -196,6 +194,7 @@ function EditBook() {
                                     step="0.01"
                                     className="form-control"
                                     name="price"
+                                    placeholder="e.g. 12.99"
                                     onChange={handleChange}
                                     value={formData.price}
                                 />
@@ -210,6 +209,7 @@ function EditBook() {
                                     type="number"
                                     className="form-control"
                                     name="availability"
+                                    placeholder="e.g. 50"
                                     onChange={handleChange}
                                     value={formData.availability}
                                 />
@@ -224,6 +224,7 @@ function EditBook() {
                                     type="number"
                                     className="form-control"
                                     name="publisherId"
+                                    placeholder="Enter publisher ID"  
                                     onChange={handleChange}
                                     value={formData.publisherId}
                                 />
@@ -236,12 +237,13 @@ function EditBook() {
                                     className="form-control"
                                     name="description"
                                     rows={4}
+                                    placeholder="Enter a short description of the book (optional)"
                                     onChange={handleChange}
                                     value={formData.description}
                                 />
                             </div>
 
-                            {/* Actions */}
+                            {/* Submit */}
                             <div className="col-12 d-flex justify-content-end gap-2 mt-2">
                                 <button
                                     type="button"
@@ -251,7 +253,7 @@ function EditBook() {
                                     Cancel
                                 </button>
                                 <button type="submit" className="btn btn-success">
-                                    <i className="bi bi-check-circle me-1"></i> Save Changes
+                                    <i className="bi bi-plus-circle me-1"></i> Create Book
                                 </button>
                             </div>
 
@@ -263,4 +265,4 @@ function EditBook() {
     );
 }
 
-export default EditBook;
+export default CreateBook;

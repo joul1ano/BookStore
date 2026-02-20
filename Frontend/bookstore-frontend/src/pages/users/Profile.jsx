@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMe } from "../services/userService";
+import { getMe } from "../../services/userService";
 import { useNavigate, useLocation } from "react-router-dom";
 
 function ProfilePage() {

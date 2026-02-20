@@ -31,7 +31,7 @@ export const getMyOrders = async () => {
   return response.data;
 };
 
-export const getOrderById = async (orderId) => {
+export const getMyOrderById = async (orderId) => {
   const token = localStorage.getItem("token");
   const response = await axios.get(
     `${API_URL}/users/me/orders/${orderId}`,
@@ -41,5 +41,34 @@ export const getOrderById = async (orderId) => {
       },
     }
   );
+  return response.data;
+};
+
+export const getOrderById = async (orderId) => {
+  const token = localStorage.getItem("token");
+  const response = await axios.get(
+    `${API_URL}/orders/${orderId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const getAllOrders = async () => {
+  const token = localStorage.getItem("token");
+  const response = await axios.get(`${API_URL}/orders`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const updateOrderStatus = async (id, status) => {
+  const token = localStorage.getItem("token");
+  const response = await axios.put(`${API_URL}/orders/${id}`, { status }, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return response.data;
 };

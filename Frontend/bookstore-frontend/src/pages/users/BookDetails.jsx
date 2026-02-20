@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getBookById } from "../services/bookService";
-import { useCart } from "../context/CartContext";
+import { getBookById } from "../../services/bookService";
+import { useCart } from "../../context/CartContext";
 import { useLocation, useNavigate } from "react-router-dom";
 
 function BookDetails() {

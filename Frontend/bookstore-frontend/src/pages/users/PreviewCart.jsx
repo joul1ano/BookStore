@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getCartItems } from "../services/cartService";
-import { useCart } from "../context/CartContext";
+import { getCartItems } from "../../services/cartService";
+import { useCart } from "../../context/CartContext";
 import { useNavigate } from "react-router-dom";
 
 function PreviewCart() {
@@ -118,7 +118,7 @@ function PreviewCart() {
 
         <button
           className="btn btn-info px-4"
-          onClick={() => navigate("/checkout")}>
+          onClick={() => navigate("/me/cart/checkout")}>
           Next Step →
         </button>
       </div>

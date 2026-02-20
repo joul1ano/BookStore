@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
-import BookCard from "../components/BookCard.jsx";
-import { getAllBooks } from "../services/bookService";
+import BookCard from "../../components/BookCard.jsx";
+import { getAllBooks } from "../../services/bookService";
 
 function BooksPage() {
   const [books, setBooks] = useState([]);

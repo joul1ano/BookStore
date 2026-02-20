@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getAllBooks } from "../services/bookService";
-import AdminBookRow from "../components/AdminBookRow";
+import { getAllBooks } from "../../services/bookService";
+import AdminBookRow from "../../components/AdminBookRow";
 import { useNavigate } from "react-router-dom";
 
 function AdminProducts() {

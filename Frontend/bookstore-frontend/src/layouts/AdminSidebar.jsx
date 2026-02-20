@@ -36,15 +36,25 @@ function AdminSidebar() {
           Products
         </NavLink>
 
-        <span className="nav-link text-muted d-flex align-items-center gap-2">
+        <NavLink
+          to="/admin/users"
+          className={({ isActive }) =>
+            `nav-link fw-semibold d-flex align-items-center gap-2 ${isActive ? "bg-success bg-opacity-10 text-success rounded" : ""}`
+          }
+        >
           <i className="bi bi-people"></i>
           Users
-        </span>
+        </NavLink>
 
-        <span className="nav-link text-muted d-flex align-items-center gap-2">
+        <NavLink
+          to="/admin/orders"
+          className={({ isActive }) =>
+            `nav-link fw-semibold d-flex align-items-center gap-2 ${isActive ? "bg-success bg-opacity-10 text-success rounded" : ""}`
+          }
+        >
           <i className="bi bi-cart-check"></i>
           Orders
-        </span>
+        </NavLink>
 
         <span className="nav-link text-muted d-flex align-items-center gap-2">
           <i className="bi bi-building"></i>

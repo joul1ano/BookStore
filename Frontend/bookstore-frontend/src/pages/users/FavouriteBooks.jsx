@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { useFavourites } from "../context/FavouriteContext";
-import BookCard from "../components/BookCard";
+import { useFavourites } from "../../context/FavouriteContext";
+import BookCard from "../../components/BookCard";
 
 function FavouriteBooks() {
   const { favourites, fetchFavourites } = useFavourites();
