@@ -1,29 +1,37 @@
-BookStore is an online bookstore backend application built with Java Spring Boot focused on developing RESTful APIs for typical e-commerce bookstore features such as managing books, shopping carts, orders, and users. It demonstrates core backend capabilities including CRUD operations, user authentication, and role-based access control.
+BookStore is a full-stack web application featuring a Java Spring Boot backend and a React frontend built with Vite and Bootstrap. The system provides a complete solution for managing an online bookstore through a RESTful API and a responsive user interface, supporting role-based access for both customers and administrators.
 
 ## Features:
 
-1) Full CRUD for Books, Orders, Users, and Shopping Cart
-2) Secure user authentication and role-based access
-3) Spring Boot backend with efficient data handling
-4) Organized codebase ready for extension
+1) User Perspective <br />
+   Customers can browse the book collection, add items to a list of favorites, and manage a shopping cart. The system allows users to place orders and track their order history and status.
+2) Admin Perspective <br />
+   Administrators have access to tools to browse the full list of books and registered users. They can perform CRUD operations to create new book entries or update existing ones, as well as manage customer orders and update their fulfillment status.
 
 ## Tech Stack:
 
-1) Language: Java
+1) Languages: Java, JavaScript
 2) Framework: Spring Boot
-3) Build Tool: Maven
-4) Database: PostgreSQL
-5) Authentication: JWT / Spring Security
-6) Version Control: Git / GitHub
+3) Libraries: React, Bootstrap
+4) Build Tools: Maven, Vite
+5) Database: PostgreSQL
+6) Authentication: JWT / Spring Security
+7) Version Control: Git / GitHub
 
 ## Installation:
-1) Clone the repository: A) git clone https://github.com/joul1ano/BookStore.git B) cd BookStore
+### Setting up the Backend
+1) Clone the repository: A) git clone https://github.com/joul1ano/BookStore.git B) cd BookStore/Backend
 2) Build with Maven:
    mvn clean install
 3) Configure Database:
    Create and configure your database connection in application.properties or application.yml
 4) Run the Application:
    mvn spring-boot:run
+
+### Setting up the Frontend
+1) cd Frontend/bookstore-frontend
+2) Install dependencies: npm install
+3) Run the development server: npm run dev
+4) Access the application: Open your browser and go to the local URL provided in your terminal
 
 ## API Documentation (Swagger UI)
 

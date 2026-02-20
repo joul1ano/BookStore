@@ -40,6 +40,7 @@ function Login() {
       }
 
       setSuccess("Login successful!");
+      
       setError(null);
 
       // Navigate based on role
