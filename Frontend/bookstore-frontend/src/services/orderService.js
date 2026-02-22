@@ -5,6 +5,7 @@ const API_URL = "http://localhost:8080";
 
 export const placeOrder = async (orderData) => {
   const token = localStorage.getItem("token");
+
   const response = await axios.post(
     `${API_URL}/users/me/orders`,
     orderData,
@@ -19,6 +20,7 @@ export const placeOrder = async (orderData) => {
 
 export const getMyOrders = async () => {
   const token = localStorage.getItem("token");
+
   const response = await axios.get(
     `${API_URL}/users/me/orders`,
     { headers: {
@@ -33,6 +35,7 @@ export const getMyOrders = async () => {
 
 export const getMyOrderById = async (orderId) => {
   const token = localStorage.getItem("token");
+
   const response = await axios.get(
     `${API_URL}/users/me/orders/${orderId}`,
     {
@@ -46,6 +49,7 @@ export const getMyOrderById = async (orderId) => {
 
 export const getOrderById = async (orderId) => {
   const token = localStorage.getItem("token");
+
   const response = await axios.get(
     `${API_URL}/orders/${orderId}`,
     {
@@ -57,9 +61,14 @@ export const getOrderById = async (orderId) => {
   return response.data;
 };
 
-export const getAllOrders = async () => {
+export const getAllOrders = async (page = 0, size = 10, username = null, status = null) => {
   const token = localStorage.getItem("token");
-  const response = await axios.get(`${API_URL}/orders`, {
+  const params = new URLSearchParams({page, size})
+  if(username) params.append("username", username);
+  if(status) params.append("status",status);
+
+
+  const response = await axios.get(`${API_URL}/orders?${params}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;

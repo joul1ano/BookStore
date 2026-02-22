@@ -1,7 +1,9 @@
 package com.bookstore.service;
 
+import com.bookstore.DTOs.BookDTO;
 import com.bookstore.DTOs.OrderDTO;
 import com.bookstore.DTOs.OrderDetailsDTO;
+import com.bookstore.DTOs.PagedResponseDTO;
 import com.bookstore.DTOs.requests.PlaceOrderRequest;
 import com.bookstore.DTOs.requests.UpdateOrderStatusRequest;
 import com.bookstore.enums.OrderStatus;
@@ -11,6 +13,8 @@ import com.bookstore.mappers.OrderMapper;
 import com.bookstore.model.*;
 import com.bookstore.repository.*;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -113,20 +117,29 @@ public class OrderService {
     /*
     --------------Admin------------------
      */
-    public List<OrderDTO> getAllOrders(Optional<String> username, Optional<OrderStatus> status){
-        if (username.isPresent() && status.isPresent()){
-            return orderRepository.findAllByUser_UsernameAndStatus(username.get(), status.get())
-                    .stream().map(orderMapper::toDTO).toList();
+    public PagedResponseDTO<OrderDTO> getAllOrders(Optional<String> username, Optional<OrderStatus> status, Pageable pageable){
+        Page<Order> page;
+        if (username.isPresent() && status.isPresent()) {
+            page = orderRepository.findAllByUser_UsernameAndStatus(username.get(), status.get(), pageable);
+        } else if (username.isPresent() && status.isEmpty()) {
+            page = orderRepository.findAllByUser_Username(username.get(),pageable);
+        } else if (username.isEmpty() && status.isPresent()) {
+            page = orderRepository.findAllByStatus(status.get(), pageable);
+        }else {
+            page = orderRepository.findAll(pageable);
         }
-        if(username.isPresent()){
-            return orderRepository.findAllByUser_Username(username.get())
-                    .stream().map(orderMapper::toDTO).toList();
-        }
-        if (status.isPresent()){
-            return orderRepository.findAllByStatus(status.get())
-                    .stream().map(orderMapper::toDTO).toList();
-        }
-        return orderRepository.findAll().stream().map(orderMapper::toDTO).toList();
+
+        List<OrderDTO> orders = page.getContent().stream().map(orderMapper::toDTO).toList();
+        PagedResponseDTO<OrderDTO> ordersPage = PagedResponseDTO.<OrderDTO>builder()
+                .content(orders)
+                .page(page.getNumber())
+                .size(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .last(page.isLast())
+                .build();
+
+        return ordersPage;
     }
 
     public OrderDetailsDTO getOrderById(Long orderId){

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllOrders } from "../../services/orderService";
 
+const PAGE_SIZE = 10;
+
 const formatDateTime = (isoString) => {
   if (!isoString) return "—";
   return new Date(isoString).toLocaleString("en-GB", {
@@ -41,38 +43,61 @@ const statusBadge = (status) => {
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [shippedCount, setShippedCount] = useState(0);
+  const [deliveredCount, setDeliveredCount] = useState(0);
   const [orderIdSearch, setOrderIdSearch] = useState("");
   const [userSearch, setUserSearch] = useState("");
   const navigate = useNavigate();
 
+  const fetchOrders = async (page = 0) => {
+    setLoading(true);
+    try {
+      const data = await getAllOrders(page, PAGE_SIZE);
+      setOrders(data.content);
+      setCurrentPage(data.page);
+      setTotalPages(data.totalPages);
+      setTotalElements(data.totalElements);
+    } catch (err) {
+      console.error("Failed to fetch orders", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch status counts separately using the status filter
+  // We use size=1 since we only need totalElements, not the actual content
+  const fetchStatusCounts = async () => {
+    try {
+      const [pending, shipped, delivered] = await Promise.all([
+        getAllOrders(0, 1, null, "PENDING"),
+        getAllOrders(0, 1, null, "SHIPPED"),
+        getAllOrders(0, 1, null, "DELIVERED"),
+      ]);
+      setPendingCount(pending.totalElements);
+      setShippedCount(shipped.totalElements);
+      setDeliveredCount(delivered.totalElements);
+    } catch (err) {
+      console.error("Failed to fetch status counts", err);
+    }
+  };
+
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const data = await getAllOrders();
-        setOrders(data);
-      } catch (err) {
-        console.error("Failed to fetch orders", err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchOrders();
+    fetchStatusCounts();
   }, []);
 
+  // Frontend filter for order ID and user ID search on current page
   const filtered = orders.filter((o) => {
     const matchesOrderId = orderIdSearch === "" ||
       o.id.toString().includes(orderIdSearch.trim());
-
-    const q = userSearch.toLowerCase();
     const matchesUser = userSearch === "" ||
-      o.userId.toString().includes(q);
-
+      o.userId.toString().includes(userSearch.trim());
     return matchesOrderId && matchesUser;
   });
-
-  const pendingCount = orders.filter(o => o.status === "PENDING").length;
-  const shippedCount = orders.filter(o => o.status === "SHIPPED").length;
-  const deliveredCount = orders.filter(o => o.status === "DELIVERED").length;
 
   if (loading) {
     return <div className="p-4 text-center">Loading orders...</div>;
@@ -90,7 +115,7 @@ function AdminOrders() {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
           <h2 className="fw-bold">Orders</h2>
-          <small className="text-muted">Total: {orders.length} orders</small>
+          <small className="text-muted">Total: {totalElements} orders</small>
         </div>
       </div>
 
@@ -172,6 +197,45 @@ function AdminOrders() {
             )}
           </tbody>
         </table>
+
+        {/* Pagination */}
+        <div className="d-flex justify-content-between align-items-center px-3 py-2 border-top">
+          <small className="text-muted">
+            Showing {orders.length} of {totalElements} orders
+          </small>
+          <nav>
+            <ul className="pagination pagination-sm mb-0">
+              <li className={`page-item ${currentPage === 0 ? "disabled" : ""}`}>
+                <button
+                  className="page-link"
+                  onClick={() => fetchOrders(currentPage - 1)}
+                >
+                  ← Prev
+                </button>
+              </li>
+
+              {[...Array(totalPages)].map((_, i) => (
+                <li key={i} className={`page-item ${currentPage === i ? "active" : ""}`}>
+                  <button
+                    className="page-link"
+                    onClick={() => fetchOrders(i)}
+                  >
+                    {i + 1}
+                  </button>
+                </li>
+              ))}
+
+              <li className={`page-item ${currentPage === totalPages - 1 || totalPages === 0 ? "disabled" : ""}`}>
+                <button
+                  className="page-link"
+                  onClick={() => fetchOrders(currentPage + 1)}
+                >
+                  Next →
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
     </div>
   );
