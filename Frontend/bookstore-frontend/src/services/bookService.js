@@ -20,38 +20,32 @@ export const createBook = async (bookData) => {
 };
 
 
-export const getAllBooks = async () => {
-  const API_URL = "http://localhost:8080";
+export const getAllBooks = async (page = 0, size = 5, genre = null) => {
   const token = localStorage.getItem("token");
-  try {
-    const response = await axios.get(`${API_URL}/books`, {
-      headers: {
-        Authorization: `Bearer ${token}`, 
-      },
-    });
+  const params = new URLSearchParams({ page, size });
+  if (genre) params.append("genre", genre);
 
-    return response.data; 
-  } catch (error) {
-    console.error('Error fetching books:', error);
-    return []; // return empty array on error
-  }
+  const response = await axios.get(`${API_URL}/books?${params}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
 };
 
 export const getBookById = async (id) => {
   const token = localStorage.getItem("token");
   try {
-    const response = await axios.get(`${API_URL}/books/${id}`,{
-      headers:{
+    const response = await axios.get(`${API_URL}/books/${id}`, {
+      headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    
+
     return response.data;
-    
+
   } catch (error) {
     console.error('Error fetching books:', error);
     return null;
-    
+
   }
 
 }

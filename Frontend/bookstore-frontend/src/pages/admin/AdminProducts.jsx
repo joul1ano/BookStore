@@ -6,9 +6,25 @@ import { useNavigate } from "react-router-dom";
 function AdminProducts() {
   const [books, setBooks] = useState([]);
   const navigate = useNavigate();
+  const [totalElements, setTotalElements] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const PAGE_SIZE = 5;
+
+  const fetchBooks = async (page = 0) => {
+    try {
+      const data = await getAllBooks(page, PAGE_SIZE);
+      setBooks(data.content);
+      setTotalElements(data.totalElements);
+      setCurrentPage(data.page);
+      setTotalPages(data.totalPages);
+    } catch (err) {
+      console.error("Failed to fetch books", err);
+    }
+  };
 
   useEffect(() => {
-    getAllBooks().then(setBooks);
+    fetchBooks();
   }, []);
 
   const handleBookDeleted = (deletedId) => {
@@ -28,7 +44,7 @@ function AdminProducts() {
         <div>
           <h2 className="fw-bold">Products</h2>
           <small className="text-muted">
-            Total: {books.length} active listings
+            Total: {totalElements} active listings
           </small>
         </div>
 
@@ -72,6 +88,45 @@ function AdminProducts() {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="d-flex justify-content-between align-items-center mt-3">
+        <small className="text-muted">
+          Showing {books.length} of {totalElements} books
+        </small>
+        <nav>
+          <ul className="pagination pagination-sm mb-0">
+            <li className={`page-item ${currentPage === 0 ? "disabled" : ""}`}>
+              <button
+                className="page-link"
+                onClick={() => fetchBooks(currentPage - 1)}
+              >
+                ← Prev
+              </button>
+            </li>
+
+            {[...Array(totalPages)].map((_, i) => (
+              <li key={i} className={`page-item ${currentPage === i ? "active" : ""}`}>
+                <button
+                  className="page-link"
+                  onClick={() => fetchBooks(i)}
+                >
+                  {i + 1}
+                </button>
+              </li>
+            ))}
+
+            <li className={`page-item ${currentPage === totalPages - 1 ? "disabled" : ""}`}>
+              <button
+                className="page-link"
+                onClick={() => fetchBooks(currentPage + 1)}
+              >
+                Next →
+              </button>
+            </li>
+          </ul>
+        </nav>
       </div>
     </div>
   );

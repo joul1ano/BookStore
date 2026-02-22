@@ -1,6 +1,7 @@
 package com.bookstore.controllers;
 
 import com.bookstore.DTOs.BookDTO;
+import com.bookstore.DTOs.PagedResponseDTO;
 import com.bookstore.enums.Genre;
 import com.bookstore.model.Book;
 import com.bookstore.service.BookService;
@@ -10,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,7 +20,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 
 import java.util.List;
 import java.util.Optional;
@@ -34,14 +36,14 @@ public class BookController {
     }
 
     @GetMapping
-    @Operation(
-            summary = "Get all books",
-            description = "Returns a list of all books available. Access = [ADMIN,USER]"
-    )
-
-    public List<BookDTO> getAllBooks(@RequestParam (required = false) Genre genre){
+    @Operation(summary = "Get all books", description = "Returns a list of all books available. Access = [ADMIN,USER]")
+    public PagedResponseDTO<BookDTO> getAllBooks(
+            @RequestParam (required = false) Genre genre,
+            @RequestParam (defaultValue = "0") int page,
+            @RequestParam (defaultValue = "10") int size){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return bookService.getAllBooks(auth, Optional.ofNullable(genre));
+        Pageable pageable = PageRequest.of(page,size);
+        return bookService.getAllBooks(auth, Optional.ofNullable(genre), pageable);
     }
 
     @GetMapping("/{id}")

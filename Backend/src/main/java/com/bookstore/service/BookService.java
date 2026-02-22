@@ -1,6 +1,7 @@
 package com.bookstore.service;
 
 import com.bookstore.DTOs.BookDTO;
+import com.bookstore.DTOs.PagedResponseDTO;
 import com.bookstore.enums.Genre;
 import com.bookstore.exceptions.ResourceAlreadyExistsException;
 import com.bookstore.exceptions.ResourceNotFoundException;
@@ -9,6 +10,8 @@ import com.bookstore.model.Book;
 import com.bookstore.repository.BookRepository;
 import com.bookstore.repository.PublisherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -28,19 +31,34 @@ public class BookService {
         this.publisherRepository = publisherRepository;
     }
 
-    public List<BookDTO> getAllBooks(Authentication auth, Optional<Genre> genre)
-    {
+    public PagedResponseDTO<BookDTO> getAllBooks(Authentication auth, Optional<Genre> genre, Pageable pageable) {
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        if(isAdmin && genre.isPresent()){
-            return bookRepository.findAllByGenreAndIsDeletedFalse(genre.get()).stream().map(bookMapper::toDTO).toList();
-        } else if (isAdmin && genre.isEmpty()) {
-            return bookRepository.findAllByIsDeletedFalse().stream().map(bookMapper::toDTO).toList();
-        } else if (!isAdmin && genre.isPresent()) {
-            return bookRepository.findAllByGenreAndAvailabilityGreaterThanAndIsDeletedFalse(genre.get(),0).stream().map(bookMapper::toDTO).toList();
-        }
-        return bookRepository.findByAvailabilityGreaterThanAndIsDeletedFalse(0).stream().map(bookMapper::toDTO).toList();
 
+        Page<Book> page;
+
+        if (isAdmin && genre.isPresent()) {
+            page = bookRepository.findAllByGenreAndIsDeletedFalse(genre.get(), pageable);
+        } else if (isAdmin && genre.isEmpty()) {
+            page = bookRepository.findAllByIsDeletedFalse(pageable);
+        } else if (!isAdmin && genre.isPresent()) {
+            page = bookRepository.findAllByGenreAndAvailabilityGreaterThanAndIsDeletedFalse(genre.get(), 0, pageable);
+        } else {
+            page = bookRepository.findByAvailabilityGreaterThanAndIsDeletedFalse(0, pageable);
+        }
+
+        List<BookDTO> content = page.getContent().stream()
+                .map(bookMapper::toDTO)
+                .toList();
+
+        return new PagedResponseDTO<>(
+                content,
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.isLast()
+        );
     }
 
     public BookDTO getBookById(Long id) {
